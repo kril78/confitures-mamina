@@ -33,6 +33,7 @@ function afficherLigne(c) {
         <td>${c.type}</td>
         <td>${c.categorie || '—'}</td>
         <td>${c.presence || '—'}</td>
+        <td>${c.image ? `<img src="${c.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
         <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
     `;
     tbody.appendChild(tr);
