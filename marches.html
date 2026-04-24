@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marchés — Les Confitures de Mamina</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="marches.css">
+</head>
+
+<body>
+    <header>
+        <h1>Les Confitures de Mamina</h1>
+        <p>Confitures artisanales préparées dans un chaudron en cuivre familial, avec les fruits du jardin et les
+            recettes d'autrefois.</p>
+        <nav>
+            <a href="index.html">Accueil</a>
+            <a href="confitures.html">Confitures</a>
+            <a href="marches.html">Marchés</a>
+            <a href="contact.html">Contact</a>
+            <a href="gestion.html">Gestion</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- PROCHAIN MARCHÉ -->
+        <section id="prochain-marche">
+            <h2>Prochain marché</h2>
+            <div id="bloc-prochain"></div>
+        </section>
+
+        <!-- CALENDRIER -->
+        <section id="section-calendrier">
+            <h2>Calendrier</h2>
+            <div class="calendrier">
+                <div class="calendrier-header">
+                    <button class="btn-calendrier" onclick="changerMois(-1)">◀</button>
+                    <span id="mois-titre"></span>
+                    <button class="btn-calendrier" onclick="changerMois(1)">▶</button>
+                </div>
+                <div class="calendrier-grille" id="calendrier-grille"></div>
+            </div>
+        </section>
+
+        <!-- LISTE DES MARCHÉS -->
+        <section id="section-liste">
+            <h2>Tous les marchés à venir</h2>
+            <div id="liste-marches"></div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Les Confitures de Mamina</p>
+        <div class="footer-coordonnees">
+            <a href="tel:+33100000000">📞 01 ** ** ** **</a>
+            <a href="mailto:mamina@confitures.fr">✉️ mamina@confitures.fr</a>
+        </div>
+    </footer>
+
+    <script src="marches.js"></script>
+    <style>
+        .jour.weekend {
+            background-color: var(--couleur-fond-secondaire);
+            color: var(--couleur-dore);
+        }
+
+        .jour.marche-periode {
+            background-color: var(--couleur-dore-clair);
+            color: white;
+            border-radius: 0;
+        }
+
+        .jour.marche-debut {
+            border-radius: 50% 0 0 50%;
+        }
+
+        .jour.marche-fin {
+            border-radius: 0 50% 50% 0;
+        }
+
+        .jour.marche-debut.marche-fin {
+            border-radius: 50%;
+        }
+    </style>
+</body>
+
+</html>

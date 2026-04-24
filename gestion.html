@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion — Confitures de Mamina</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="gestion.css">
+</head>
+
+<body class="admin-body">
+    <div id="ecran-mdp" style="
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #111;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 9999;
+">
+    <div style="text-align: center;">
+        <div class="badge-admin">⚙ Administration</div>
+        <h2 style="color: var(--couleur-dore); margin: 20px 0;">Accès restreint</h2>
+        <input id="champ-mdp" class="champ-texte" type="password" 
+               placeholder="Mot de passe..." 
+               style="width: 250px; text-align: center; margin-bottom: 15px;"
+               onkeydown="if(event.key==='Enter') verifierMdp()">
+        <br>
+        <button class="btn-valider" onclick="verifierMdp()">Entrer</button>
+        <a href="index.html" style="display: block; margin-top: 20px; color: #aaa; font-family: Georgia, serif; font-size: 0.9em;">← Retour à l'accueil</a>
+        <p id="msg-erreur" style="color: #cc4444; margin-top: 15px; display: none;">
+            Mot de passe incorrect.
+        </p>
+    </div>
+</div>
+    <div class="admin-header">
+        <div class="badge-admin">⚙ Administration</div>
+        <h1 style="color: var(--couleur-dore);">Gestion des confitures</h1>
+        <nav style="margin-top: 15px; display: flex; justify-content: center; gap: 30px;">
+            <a href="index.html">← Retour au site</a>
+            <a href="confitures.html">Voir les confitures</a>
+            <a href="gestion-marches.html">Gestion marchés</a>
+            <a href="gestion-questions.html">Questions</a>
+        </nav>
+    </div>
+
+    <div class="admin-main">
+        <button class="btn-ajouter" onclick="ajouterLigne()">+ Ajouter une confiture</button>
+
+        <table class="tableau-admin">
+            <thead>
+                <th>Photo</th>
+                <tr>
+                    <th>Nom</th>
+                    <th>Description courte</th>
+                    <th>Type</th>
+                    <th>Catégorie</th>
+                    <th>Présence</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="corps-admin">
+                <!-- Les confitures existantes s'affichent ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin-footer">⚙ Interface d'administration — Les Confitures de Mamina</div>
+    <script src="gestion.js"></script>
+</body>
+
+</html>

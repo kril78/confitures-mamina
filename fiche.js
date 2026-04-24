@@ -1,0 +1,96 @@
+// ===================================
+// RÉCUPÉRATION DE L'URL
+// ===================================
+
+const params = new URLSearchParams(window.location.search);
+const nomRecherche = params.get('nom');
+
+let toutesLesConfitures = [];
+
+// ===================================
+// CHARGEMENT
+// ===================================
+
+fetch('confitures.json')
+    .then(r => r.json())
+    .then(confitures => {
+        toutesLesConfitures = confitures;
+        const c = confitures.find(c => c.nom === nomRecherche);
+
+        if (!c) {
+            document.getElementById('fiche-contenu').innerHTML = '<p>Confiture introuvable.</p>';
+            return;
+        }
+
+        document.title = `${c.nom} — Les Confitures de Mamina`;
+        afficherFiche(c, confitures);
+    });
+
+// ===================================
+// AFFICHAGE FICHE
+// ===================================
+
+function afficherFiche(c, toutes) {
+    const imagePath = `images/confitures/${c.nom.toLowerCase().replace(/ /g, '-').replace(/&/g, 'et')}.jpg`;
+
+    document.getElementById('fiche-contenu').innerHTML = `
+
+        <div class="fiche-bloc">
+
+            <!-- IMAGE -->
+            <div class="fiche-image">
+                <img src="${imagePath}" alt="${c.nom}" onerror="this.src='images/confitures/default.jpg'">
+            </div>
+
+            <!-- INFOS DROITE -->
+            <div class="fiche-infos">
+                <h2>${c.nom}</h2>
+
+                <div class="fiche-badges">
+                    <span class="badge">${c.type}</span>
+                    <span class="badge badge-presence">${c.presence || 'Permanente'}</span>
+                </div>
+
+                <p class="fiche-description-courte">${c.description_courte || ''}</p>
+
+                <div class="fiche-prix">
+                    <span class="prix-item">1 pot — <strong>8 €</strong></span>
+                    <span class="prix-separateur">|</span>
+                    <span class="prix-item">4 pots — <strong>30 €</strong></span>
+                </div>
+
+                <div class="fiche-details">
+                    <p><span class="label">🍓 Fruits :</span> ${c.fruits}</p>
+                    <p><span class="label">📦 Catégorie :</span> ${c.categorie || '—'}</p>
+                    <p><span class="label">⚗️ Composition :</span> ${c.ingredients || '60% fruits, 40% sucre'}</p>
+                </div>
+
+                <a href="contact.html" class="btn-commander">Commander →</a>
+            </div>
+        </div>
+
+        <!-- DESCRIPTION LONGUE -->
+        <div class="fiche-description-longue">
+            <h3>Notre histoire avec cette confiture</h3>
+            <p>${c.description_longue || ''}</p>
+        </div>
+
+        <!-- CARROUSEL SUGGESTIONS -->
+        <div class="fiche-suggestions">
+            <h3>Vous aimerez aussi</h3>
+            <div class="carrousel-tendances">
+                ${toutes
+                    .filter(x => x.nom !== c.nom)
+                    .slice(0, 6)
+                    .map(x => `
+                        <div class="carte-tendance" onclick="window.location.href='fiche.html?nom=${encodeURIComponent(x.nom)}'">
+                            <img src="images/confitures/${x.nom.toLowerCase().replace(/ /g, '-').replace(/&/g, 'et')}.jpg" 
+                                 alt="${x.nom}"
+                                 onerror="this.src='images/confitures/default.jpg'">
+                            <p>${x.nom}</p>
+                        </div>
+                    `).join('')}
+            </div>
+        </div>
+    `;
+}

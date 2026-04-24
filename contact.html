@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — Les Confitures de Mamina</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="contact.css">
+</head>
+<body>
+    <header>
+        <h1>Les Confitures de Mamina</h1>
+        <p>Confitures artisanales préparées dans un chaudron en cuivre familial, avec les fruits du jardin et les recettes d'autrefois.</p>
+        <nav>
+            <a href="index.html">Accueil</a>
+            <a href="confitures.html">Confitures</a>
+            <a href="marches.html">Marchés</a>
+            <a href="contact.html">Contact</a>
+            <a href="gestion.html">Gestion</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- COORDONNÉES -->
+        <section class="section-coordonnees">
+            <h2>Passer commande</h2>
+            <p>Pour commander nos confitures, contactez Mamina directement par téléphone ou par email. Elle sera ravie de vous répondre !</p>
+            <div class="bloc-coordonnees">
+                <div class="ligne-coordonnees">
+                    <a href="tel:+33100000000" class="coord-item coord-lien">
+                        <span class="coord-icone">📞</span>
+                        <div>
+                            <p class="coord-label">Téléphone</p>
+                            <p class="coord-valeur">01 ** ** ** **</p>
+                        </div>
+                    </a>
+                    <a href="mailto:mamina@confitures.fr" class="coord-item coord-lien">
+                        <span class="coord-icone">✉️</span>
+                        <div>
+                            <p class="coord-label">Email</p>
+                            <p class="coord-valeur">mamina@confitures.fr</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="coord-item">
+                    <span class="coord-icone">🕐</span>
+                    <div>
+                        <p class="coord-label">Disponibilité</p>
+                        <p class="coord-valeur">Du lundi au vendredi, 9h – 18h</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORMULAIRE QUESTION -->
+        <section class="section-question">
+            <h2>Poser une question</h2>
+            <p>Une question sur nos produits, nos ingrédients ou nos marchés ? Laissez votre message ici ou envoyer nous un mail.</p>
+            <p>Vous voulez passer commande?</p>
+            <div class="formulaire-question">
+                <div class="champ-groupe">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" placeholder="Votre prénom">
+                </div>
+                <div class="champ-groupe">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Votre email">
+                </div>
+                <div class="champ-groupe">
+                    <label for="message">Votre question / commande</label>
+                    <textarea id="message" rows="5" placeholder="Écrivez votre question ici..."></textarea>
+                </div>
+                <button class="btn-envoyer" onclick="envoyerQuestion()">Envoyer ✉</button>
+                <p id="msg-confirmation" style="display:none; color: var(--couleur-dore); margin-top: 15px;">
+                    ✓ Votre question a bien été envoyée, merci !
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Les Confitures de Mamina</p>
+        <div class="footer-coordonnees">
+            <a href="tel:+33100000000">📞 01 ** ** ** **</a>
+            <a href="mailto:mamina@confitures.fr">✉️ mamina@confitures.fr</a>
+        </div>
+    </footer>
+
+    <script src="contact.js"></script>
+</body>
+</html>

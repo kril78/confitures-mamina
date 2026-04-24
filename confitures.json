@@ -1,0 +1,62 @@
+[
+  { 
+      "nom": "Fraise Gariguette", 
+      "type": "Confiture", 
+      "fruits": "Fraise",
+      "categorie": "Fruits rouges",
+      "presence": "Permanente",
+      "description": "Une confiture généreuse aux fraises Gariguette cueillies à maturité, avec une texture légèrement confite et un parfum délicat.",
+      "image": "images/confitures/fraise.jpg",
+      "tendance": true 
+  },
+  { 
+      "nom": "Framboise", 
+      "type": "Confiture", 
+      "fruits": "Framboise",
+      "categorie": "Fruits rouges",
+      "presence": "Permanente",
+      "description": "Une confiture de framboise intense et parfumée, préparée avec les framboises du jardin.",
+      "image": "images/confitures/framboise.jpg",
+      "tendance": true 
+  },
+  { 
+      "nom": "Cassis", 
+      "type": "Gelée", 
+      "fruits": "Cassis",
+      "categorie": "Fruits rouges",
+      "presence": "Permanente",
+      "description": "Une gelée de cassis au goût prononcé et légèrement acidulé.",
+      "image": "images/confitures/cassis.jpg",
+      "tendance": true 
+  },
+  { 
+      "nom": "Abricot", 
+      "type": "Confiture", 
+      "fruits": "Abricot",
+      "categorie": "Fruits à noyau",
+      "presence": "Permanente",
+      "description": "Une confiture d'abricot dorée et parfumée, avec des morceaux fondants.",
+      "image": "images/confitures/abricot.jpg",
+      "tendance": true 
+  },
+  { 
+      "nom": "Orange amère", 
+      "type": "Confiture", 
+      "fruits": "Orange amère",
+      "categorie": "Agrumes",
+      "presence": "Permanente",
+      "description": "Une marmelade d'orange amère traditionnelle, légèrement amère et très parfumée.",
+      "image": "images/confitures/orange.jpg",
+      "tendance": false 
+  },
+  { 
+      "nom": "Figue & Noix", 
+      "type": "Mélange", 
+      "fruits": "Figue, Noix",
+      "categorie": "Mélange",
+      "presence": "Temporaire",
+      "description": "Un mélange gourmand de figues et de noix, parfait avec un plateau de fromages.",
+      "image": "images/confitures/figue-noix.jpg",
+      "tendance": false 
+  }
+]

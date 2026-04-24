@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Marchés — Confitures de Mamina</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="gestion.css">
+</head>
+<body class="admin-body">
+    <div class="admin-header">
+        <div class="badge-admin">⚙ Administration</div>
+        <h1 style="color: var(--couleur-dore);">Gestion des marchés</h1>
+        <nav style="margin-top: 15px; display: flex; justify-content: center; gap: 30px;">
+            <a href="index.html">← Retour au site</a>
+            <a href="marches.html">Voir les marchés</a>
+            <a href="gestion.html">Gestion confitures</a>
+            <a href="gestion-questions.html">Questions</a>
+        </nav>
+    </div>
+
+    <div class="admin-main">
+        <button class="btn-ajouter" onclick="ajouterMarche()">+ Ajouter un marché</button>
+
+        <table class="tableau-admin">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th>Horaires</th>
+                    <th>Ville</th>
+                    <th>Adresse</th>
+                    <th>Thème</th>
+                    <th>Flyer</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="corps-marches"></tbody>
+        </table>
+    </div>
+
+    <div class="admin-footer">⚙ Interface d'administration — Les Confitures de Mamina</div>
+    <script src="gestion-marches.js"></script>
+</body>
+</html>
