@@ -167,8 +167,8 @@ async function validerLigne(btn) {
         <td>${categories}</td>
         <td>${presence}</td>
         <td>${ingredients}</td>
-        <td>${desc_courte}</td>
-        <td>${desc_longue}</td>
+        <td>${c.description_courte ? c.description_courte.substring(0, 50) + '...' : '—'}</td>
+        <td>${c.description_longue ? c.description_longue.substring(0, 50) + '...' : '—'}</td>
         <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
         <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
     `;
