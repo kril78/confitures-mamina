@@ -77,3 +77,16 @@
 .btn-maps:hover {
     background-color: var(--couleur-dore-clair);
 }
+.btn-retour {
+    display: inline-block;
+    color: var(--couleur-texte-secondaire);
+    text-decoration: none;
+    font-style: italic;
+    margin-bottom: 30px;
+    transition: color 0.3s;
+    font-size: 1.05em;
+}
+
+.btn-retour:hover {
+    color: var(--couleur-dore);
+}
