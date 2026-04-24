@@ -34,8 +34,8 @@ function afficherLigne(c) {
         <td>${c.categorie || '—'}</td>
         <td>${c.presence || '—'}</td>
         <td>${c.ingredients || '—'}</td>
-        <td>${c.description_courte || '—'}</td>
-        <td>${c.description_longue || '—'}</td>
+        <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
+        <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
         <td>${c.image ? `<img src="${c.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
         <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
     `;
