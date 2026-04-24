@@ -28,7 +28,7 @@ db.get('confitures').then(confitures => {
 // ===================================
 
 function afficherFiche(c, toutes) {
-    const imagePath = c.image || '';
+    const imagePath = c.image || `https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/public/image/${c.nom.toLowerCase().replace(/ /g, '-').replace(/&/g, 'et')}.jpg`;
     document.getElementById('fiche-contenu').innerHTML = `
 
         <div class="fiche-bloc">
