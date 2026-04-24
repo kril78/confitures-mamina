@@ -111,22 +111,21 @@
             <a href="mailto:mamina@confitures.fr">✉️ mamina@confitures.fr</a>
         </div>
     </footer>
-    <script>
-        fetch('confitures.json')
-          .then(r => r.json())
-          .then(confitures => {
-            const tbody = document.getElementById('corps-tableau');
-            confitures.forEach(c => {
-              const tr = document.createElement('tr');
-              tr.style.cursor = 'pointer';
-              tr.innerHTML = `<td>${c.nom}</td><td>${c.type}</td><td>${c.fruits}</td>`;
-              tr.onclick = () => {
-                window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
-              };
-              tbody.appendChild(tr);
-            });
-          });
-        </script>
+<script src="supabase.js"></script>
+<script>
+db.get('confitures').then(confitures => {
+    const tbody = document.getElementById('corps-tableau');
+    confitures.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.style.cursor = 'pointer';
+        tr.innerHTML = `<td>${c.nom}</td><td>${c.type}</td><td>${c.fruits}</td>`;
+        tr.onclick = () => {
+            window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+        };
+        tbody.appendChild(tr);
+    });
+});
+</script>
 </body>
 
 </html>
