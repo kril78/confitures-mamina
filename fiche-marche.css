@@ -1,0 +1,79 @@
+/* ===================================
+   FICHE MARCHÉ - Bloc principal
+   =================================== */
+
+   .fiche-marche-bloc {
+    display: flex;
+    gap: 60px;
+    align-items: flex-start;
+    background-color: white;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 2px 12px rgba(61, 40, 23, 0.08);
+    margin-bottom: 40px;
+}
+
+.fiche-marche-flyer {
+    width: 300px;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--couleur-fond-secondaire);
+}
+
+.fiche-marche-infos {
+    flex: 1;
+}
+
+.fiche-marche-infos h2 {
+    text-align: left;
+    margin-top: 0;
+    font-size: 2em;
+    border: none;
+}
+
+/* ===================================
+   FICHE MARCHÉ - Compte à rebours
+   =================================== */
+
+.fiche-marche-rebours {
+    display: inline-block;
+    background-color: var(--couleur-dore);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-style: italic;
+    margin-bottom: 25px;
+}
+
+/* ===================================
+   FICHE MARCHÉ - Détails
+   =================================== */
+
+.fiche-marche-details {
+    margin-bottom: 30px;
+}
+
+.fiche-marche-details p {
+    margin: 10px 0;
+    font-size: 1.05em;
+}
+
+/* ===================================
+   FICHE MARCHÉ - Bouton Maps
+   =================================== */
+
+.btn-maps {
+    display: inline-block;
+    background-color: var(--couleur-dore);
+    color: white;
+    text-decoration: none;
+    padding: 14px 36px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    transition: background-color 0.3s;
+}
+
+.btn-maps:hover {
+    background-color: var(--couleur-dore-clair);
+}
