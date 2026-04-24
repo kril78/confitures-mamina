@@ -27,6 +27,7 @@ db.get('confitures').then(confitures => {
 function afficherLigne(c) {
     const tbody = document.getElementById('corps-admin');
     const tr = document.createElement('tr');
+    tr.dataset.id = c.id;
     tr.innerHTML = `
         <td>${c.nom}</td>
         <td>${c.type || '—'}</td>
@@ -178,12 +179,16 @@ async function validerLigne(btn) {
 // CONFIRMATION SUPPRESSION
 // ===================================
 
-function confirmerSuppression(btn) {
+async function confirmerSuppression(btn) {
     if (confirm("Supprimer cette confiture ?")) {
-        btn.closest('tr').remove();
+        const tr = btn.closest('tr');
+        const id = tr.dataset.id;
+        if (id) {
+            await db.delete('confitures', id);
+        }
+        tr.remove();
     }
 }
-
 // ===================================
 // PREVIEW IMAGE
 // ===================================
