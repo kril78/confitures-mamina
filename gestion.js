@@ -29,10 +29,13 @@ function afficherLigne(c) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
         <td>${c.nom}</td>
-        <td>${c.description_courte || '—'}</td>
-        <td>${c.type}</td>
+        <td>${c.type || '—'}</td>
+        <td>${c.fruits || '—'}</td>
         <td>${c.categorie || '—'}</td>
         <td>${c.presence || '—'}</td>
+        <td>${c.ingredients || '—'}</td>
+        <td>${c.description_courte || '—'}</td>
+        <td>${c.description_longue || '—'}</td>
         <td>${c.image ? `<img src="${c.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
         <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
     `;
