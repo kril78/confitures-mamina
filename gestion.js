@@ -54,54 +54,48 @@ function ajouterLigne() {
     const tr = document.createElement('tr');
     tr.className = 'ligne-saisie';
     tr.innerHTML = `
-        <td><input class="champ-texte" type="text" placeholder="Nom"></td>
-        <td><input class="champ-texte" type="text" placeholder="Description courte..."></td>
-        <td><textarea class="champ-texte" placeholder="Description longue..." rows="3"></textarea></td>
-        <td><input class="champ-texte" type="text" placeholder="Ex: Fraise, Sucre"></td>
-        <td><input class="champ-texte" type="text" placeholder="Ex: 60% fruits, 40% sucre"></td>
-        <td>
-            <select class="champ-select">
-                <option value="Confiture">Confiture</option>
-                <option value="Gelée">Gelée</option>
-                <option value="Autre">Autre</option>
-            </select>
-        </td>
-        <td>
-            <div class="filtre-custom">
-                <button class="filtre-bouton" onclick="this.parentElement.classList.toggle('ouvert')">
-                    Catégories ▾
-                </button>
-                <div class="filtre-panneau">
-                    <label class="filtre-option"><input type="checkbox" value="Fruits rouges"> Fruits rouges</label>
-                    <label class="filtre-option"><input type="checkbox" value="Agrumes"> Agrumes</label>
-                    <label class="filtre-option"><input type="checkbox" value="Fruits à noyau"> Fruits à noyau</label>
-                    <label class="filtre-option"><input type="checkbox" value="Exotiques"> Exotiques</label>
-                    <label class="filtre-option"><input type="checkbox" value="Mélange"> Mélange</label>
-                </div>
+    <td><input class="champ-texte" type="text" placeholder="Nom"></td>
+    <td>
+        <select class="champ-select">
+            <option value="Confiture">Confiture</option>
+            <option value="Gelée">Gelée</option>
+            <option value="Autre">Autre</option>
+        </select>
+    </td>
+    <td><input class="champ-texte" type="text" placeholder="Ex: Fraise, Framboise"></td>
+    <td>
+        <div class="filtre-custom">
+            <button class="filtre-bouton" onclick="this.parentElement.classList.toggle('ouvert')">
+                Catégories ▾
+            </button>
+            <div class="filtre-panneau">
+                <label class="filtre-option"><input type="checkbox" value="Fruits rouges"> Fruits rouges</label>
+                <label class="filtre-option"><input type="checkbox" value="Agrumes"> Agrumes</label>
+                <label class="filtre-option"><input type="checkbox" value="Fruits à noyau"> Fruits à noyau</label>
+                <label class="filtre-option"><input type="checkbox" value="Exotiques"> Exotiques</label>
+                <label class="filtre-option"><input type="checkbox" value="Mélange"> Mélange</label>
             </div>
-        </td>
-        <td>
-            <select class="champ-select">
-                <option value="Permanente">Permanente</option>
-                <option value="Temporaire">Temporaire</option>
-            </select>
-        </td>
-        <td>
-            <select class="champ-select">
-                <option value="false">Non</option>
-                <option value="true">Oui</option>
-            </select>
-        </td>
-        <td>
-            <input type="file" id="input-image" accept="image/*" style="display:none;" onchange="previewImage(this)">
-            <button class="btn-valider" onclick="document.getElementById('input-image').click()">📷 Photo</button>
-            <div id="preview-image" style="margin-top:6px;"></div>
-        </td>
-        <td class="td-actions">
-            <button class="btn-valider" onclick="validerLigne(this)">✓ Valider</button>
-            <button class="btn-supprimer" onclick="this.closest('tr').remove()">✕</button>
-        </td>
-    `;
+        </div>
+    </td>
+    <td>
+        <select class="champ-select">
+            <option value="Permanente">Permanente</option>
+            <option value="Temporaire">Temporaire</option>
+        </select>
+    </td>
+    <td><input class="champ-texte" type="text" placeholder="Ex: 60% fruits, 40% sucre"></td>
+    <td><input class="champ-texte" type="text" placeholder="Description courte..."></td>
+    <td><textarea class="champ-texte" placeholder="Description longue..." rows="3"></textarea></td>
+    <td>
+        <input type="file" id="input-image" accept="image/*" style="display:none;" onchange="previewImage(this)">
+        <button class="btn-valider" onclick="document.getElementById('input-image').click()">📷 Photo</button>
+        <div id="preview-image" style="margin-top:6px;"></div>
+    </td>
+    <td class="td-actions">
+        <button class="btn-valider" onclick="validerLigne(this)">✓ Valider</button>
+        <button class="btn-supprimer" onclick="this.closest('tr').remove()">✕</button>
+    </td>
+`;
     tbody.appendChild(tr);
     tr.querySelector('input').focus();
 }
@@ -138,15 +132,14 @@ async function validerLigne(btn) {
     const textareas = tr.querySelectorAll('textarea');
     const selects = tr.querySelectorAll('select');
 
-    const nom = inputs[0].value || 'Sans nom';
-    const desc_courte = inputs[1].value || '';
+    const nom         = inputs[0].value || 'Sans nom';
+    const fruits      = inputs[1].value || '';
+    const ingredients = inputs[2].value || '';
+    const desc_courte = inputs[3].value || '';
     const desc_longue = textareas[0].value || '';
-    const fruits = inputs[2].value || '';
-    const ingredients = inputs[3].value || '';
-    const type = selects[0].value;
-    const categories = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
-    const presence = selects[1].value;
-    const tendance = selects[2].value === 'true';
+    const type        = selects[0].value;
+    const categories  = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
+    const presence    = selects[1].value;
 
     const inputImage = document.getElementById('input-image');
     let imageUrl = '';
@@ -156,24 +149,27 @@ async function validerLigne(btn) {
 
     await db.add('confitures', {
         nom,
-        description_courte: desc_courte,
-        description_longue: desc_longue,
         fruits,
         ingredients,
+        description_courte: desc_courte,
+        description_longue: desc_longue,
         type,
         categorie: categories,
         presence,
-        tendance,
         image: imageUrl
     });
 
     tr.className = '';
     tr.innerHTML = `
         <td>${nom}</td>
-        <td>${desc_courte}</td>
         <td>${type}</td>
+        <td>${fruits}</td>
         <td>${categories}</td>
         <td>${presence}</td>
+        <td>${ingredients}</td>
+        <td>${desc_courte}</td>
+        <td>${desc_longue}</td>
+        <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
         <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
     `;
 }
