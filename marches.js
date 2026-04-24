@@ -10,34 +10,19 @@ const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin',
                  'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const JOURS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
 
-// ===================================
-// DONNÉES EN DUR POUR TEST
-// ===================================
+fetch('marches.json')
+    .then(r => r.json())
+    .then(data => {
+        const aujourdHui = new Date();
+        aujourdHui.setHours(0,0,0,0);
 
-const donneesTest = [
-    {
-        "nom": "Marché de Printemps de Versailles",
-        "date": "2026-05-10",
-        "date_fin": "2026-05-12",
-        "heure_ouverture": "09:00",
-        "heure_fermeture": "18:00",
-        "ville": "Versailles",
-        "adresse": "Place du Marché Notre-Dame",
-        "theme": "Marché de printemps",
-        "flyer": ""
-    },
-    {
-        "nom": "Marché Artisanal de Rambouillet",
-        "date": "2026-06-12",
-        "date_fin": "2026-06-15",
-        "heure_ouverture": "10:00",
-        "heure_fermeture": "19:00",
-        "ville": "Rambouillet",
-        "adresse": "Place de la Libération",
-        "theme": "Artisanat local",
-        "flyer": ""
-    }
-];
+        tousLesMarches = data.filter(m => new Date(m.date + 'T00:00:00') >= aujourdHui);
+        tousLesMarches.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        afficherProchain();
+        afficherCalendrier();
+        afficherListe();
+    });
 
 const aujourdHui = new Date();
 aujourdHui.setHours(0,0,0,0);
