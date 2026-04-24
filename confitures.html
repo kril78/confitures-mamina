@@ -2,7 +2,6 @@
 <html lang="fr">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nos Confitures - Les Confitures de Mamina</title>
@@ -12,8 +11,7 @@
 <body>
     <header>
         <h1>Les Confitures de Mamina</h1>
-        <p>Confitures artisanales préparées dans un chaudron en cuivre familial, avec les fruits du jardin et les
-            recettes d'autrefois.</p>
+        <p>Confitures artisanales préparées dans un chaudron en cuivre familial, avec les fruits du jardin et les recettes d'autrefois.</p>
         <nav>
             <a href="index.html">Accueil</a>
             <a href="confitures.html">Confitures</a>
@@ -22,12 +20,13 @@
             <a href="gestion.html">Gestion</a>
         </nav>
     </header>
+
     <main>
         <section class="intro-confitures">
             <h2>Notre gamme de confitures</h2>
             <p>Chaque pot naît d'une cuisson lente au chaudron de cuivre, avec 60% de fruits pour préserver toute leur richesse. Découvrez nos créations préparées au fil des saisons.</p>
         </section>
-    
+
         <section class="barre-recherche-filtres">
             <div class="zone-recherche">
                 <input type="text" id="recherche" placeholder="Rechercher une confiture (ex : framboise)">
@@ -58,37 +57,12 @@
                 </div>
             </div>
         </section>
-    
+
         <section class="section-tendances">
             <h3>Les goûts tendance</h3>
-            <div class="carrousel-tendances">
-                <div class="carte-tendance" onclick="window.location.href='fiche.html?nom=Fraise+Gariguette'" style="cursor:pointer;">
-                    <img src="images/confitures/fraise.jpg" alt="Fraise Gariguette">
-                    <p>Fraise Gariguette</p>
-                </div>
-                <div class="carte-tendance">
-                    <img src="images/confitures/framboise.jpg" alt="Framboise">
-                    <p>Framboise</p>
-                </div>
-                <div class="carte-tendance">
-                    <img src="images/confitures/cassis.jpg" alt="Cassis">
-                    <p>Cassis</p>
-                </div>
-                <div class="carte-tendance">
-                    <img src="images/confitures/abricot.jpg" alt="Abricot">
-                    <p>Abricot</p>
-                </div>
-                <div class="carte-tendance">
-                    <img src="images/confitures/orange.jpg" alt="Orange amère">
-                    <p>Orange amère</p>
-                </div>
-                <div class="carte-tendance">
-                    <img src="images/confitures/figue-noix.jpg" alt="Figue & Noix">
-                    <p>Figue & Noix</p>
-                </div>
-            </div>
+            <div class="carrousel-tendances" id="carrousel-tendances"></div>
         </section>
-    
+
         <section class="section-tableau">
             <h3>Toute notre gamme</h3>
             <table class="tableau-confitures">
@@ -99,11 +73,11 @@
                         <th>Fruits</th>
                     </tr>
                 </thead>
-                <tbody id="corps-tableau">
-                </tbody>
+                <tbody id="corps-tableau"></tbody>
             </table>
         </section>
     </main>
+
     <footer>
         <p>© 2026 Les Confitures de Mamina</p>
         <div class="footer-coordonnees">
@@ -111,21 +85,40 @@
             <a href="mailto:mamina@confitures.fr">✉️ mamina@confitures.fr</a>
         </div>
     </footer>
-<script src="supabase.js"></script>
-<script>
-db.get('confitures').then(confitures => {
-    const tbody = document.getElementById('corps-tableau');
-    confitures.forEach(c => {
-        const tr = document.createElement('tr');
-        tr.style.cursor = 'pointer';
-        tr.innerHTML = `<td>${c.nom}</td><td>${c.type}</td><td>${c.fruits}</td>`;
-        tr.onclick = () => {
-            window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
-        };
-        tbody.appendChild(tr);
+
+    <script src="supabase.js"></script>
+    <script>
+    db.get('confitures').then(confitures => {
+
+        // Tableau
+        const tbody = document.getElementById('corps-tableau');
+        confitures.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.style.cursor = 'pointer';
+            tr.innerHTML = `<td>${c.nom}</td><td>${c.type}</td><td>${c.fruits}</td>`;
+            tr.onclick = () => {
+                window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+            };
+            tbody.appendChild(tr);
+        });
+
+        // Carrousel aléatoire
+        const melange = [...confitures].sort(() => Math.random() - 0.5).slice(0, 6);
+        const carrousel = document.getElementById('carrousel-tendances');
+        melange.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'carte-tendance';
+            div.style.cursor = 'pointer';
+            div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+            div.innerHTML = `
+                <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
+                <p>${c.nom}</p>
+            `;
+            carrousel.appendChild(div);
+        });
+
     });
-});
-</script>
+    </script>
 </body>
 
 </html>
