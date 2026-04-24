@@ -28,8 +28,7 @@ db.get('confitures').then(confitures => {
 // ===================================
 
 function afficherFiche(c, toutes) {
-    const imagePath = `images/confitures/${c.nom.toLowerCase().replace(/ /g, '-').replace(/&/g, 'et')}.jpg`;
-
+    const imagePath = c.image || '';
     document.getElementById('fiche-contenu').innerHTML = `
 
         <div class="fiche-bloc">
