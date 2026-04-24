@@ -161,7 +161,7 @@ function afficherListe() {
         const moisNom = MOIS_FR[date.getMonth()].substring(0, 3).toUpperCase();
 
         liste.innerHTML += `
-            <div class="carte-marche">
+            <div class="carte-marche" onclick="window.location.href='fiche-marche.html?nom=${encodeURIComponent(m.nom)}'">
                 <div class="carte-marche-date">
                     <span class="jour-num">${jour}</span>
                     ${moisNom}
