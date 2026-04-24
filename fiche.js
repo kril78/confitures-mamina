@@ -11,21 +11,18 @@ let toutesLesConfitures = [];
 // CHARGEMENT
 // ===================================
 
-fetch('confitures.json')
-    .then(r => r.json())
-    .then(confitures => {
-        toutesLesConfitures = confitures;
-        const c = confitures.find(c => c.nom === nomRecherche);
+db.get('confitures').then(confitures => {
+    toutesLesConfitures = confitures;
+    const c = confitures.find(c => c.nom === nomRecherche);
 
-        if (!c) {
-            document.getElementById('fiche-contenu').innerHTML = '<p>Confiture introuvable.</p>';
-            return;
-        }
+    if (!c) {
+        document.getElementById('fiche-contenu').innerHTML = '<p>Confiture introuvable.</p>';
+        return;
+    }
 
-        document.title = `${c.nom} — Les Confitures de Mamina`;
-        afficherFiche(c, confitures);
-    });
-
+    document.title = `${c.nom} — Les Confitures de Mamina`;
+    afficherFiche(c, confitures);
+});
 // ===================================
 // AFFICHAGE FICHE
 // ===================================
