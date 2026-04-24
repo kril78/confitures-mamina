@@ -16,19 +16,21 @@ const db = {
         return res.json();
     },
 
-    async add(table, data) {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
-            method: 'POST',
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-            },
-            body: JSON.stringify(data)
-        });
-        return res.json();
-    },
+async add(table, data) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+        method: 'POST',
+        headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    console.log('Supabase response:', json);
+    return json;
+},
 
     async delete(table, id) {
         await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
