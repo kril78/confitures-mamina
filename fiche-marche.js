@@ -12,19 +12,17 @@ const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin',
 // CHARGEMENT
 // ===================================
 
-fetch('marches.json')
-    .then(r => r.json())
-    .then(marches => {
-        const m = marches.find(m => m.nom === nomRecherche);
+db.get('marches').then(marches => {
+    const m = marches.find(m => m.nom === nomRecherche);
 
-        if (!m) {
-            document.getElementById('fiche-marche-contenu').innerHTML = '<p>Marché introuvable.</p>';
-            return;
-        }
+    if (!m) {
+        document.getElementById('fiche-marche-contenu').innerHTML = '<p>Marché introuvable.</p>';
+        return;
+    }
 
-        document.title = `${m.nom} — Les Confitures de Mamina`;
-        afficherFiche(m);
-    });
+    document.title = `${m.nom} — Les Confitures de Mamina`;
+    afficherFiche(m);
+});
 
 // ===================================
 // AFFICHAGE
