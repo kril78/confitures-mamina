@@ -863,3 +863,17 @@ footer p {
 .tableau-admin td img {
     display: block;
 }
+.btn-deplier {
+    background: none;
+    border: none;
+    color: var(--couleur-dore);
+    font-family: Georgia, serif;
+    font-size: 0.85em;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-top: 6px;
+}
+
+.btn-deplier:hover {
+    color: var(--couleur-dore-clair);
+}
