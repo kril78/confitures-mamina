@@ -41,16 +41,17 @@ async add(table, data) {
         });
     },
 
-    async update(table, id, data) {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
-            method: 'PATCH',
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-        return res.json();
-    }
-};
+  async update(table, id, data) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(data)
+    });
+    const text = await res.text();
+    return text ? JSON.parse(text) : [];
+}
