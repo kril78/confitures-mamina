@@ -94,6 +94,7 @@ function ajouterLigne() {
             <input type="file" id="input-image" accept="image/*" style="display:none;" onchange="previewImage(this)">
             <button class="btn-valider" onclick="document.getElementById('input-image').click()">📷 Photo</button>
             <div id="preview-image" style="margin-top:6px;"></div>
+            <button class="btn-supprimer" id="btn-suppr-image" style="display:none; margin-top:4px; font-size:0.8em;" onclick="supprimerImageNouvelle()">🗑 Supprimer</button>
         </td>
         <td class="td-actions">
             <button class="btn-valider" onclick="validerLigne(this)">✓ Valider</button>
@@ -130,6 +131,10 @@ async function uploadImage(fichier) {
     return '';
 }
 
+// ===================================
+// COMPRESSION IMAGE
+// ===================================
+
 function compresserImage(fichier, qualite = 0.8, maxWidth = 1200) {
     return new Promise(resolve => {
         const img = new Image();
@@ -138,16 +143,13 @@ function compresserImage(fichier, qualite = 0.8, maxWidth = 1200) {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-
             if (width > maxWidth) {
                 height = Math.round(height * maxWidth / width);
                 width = maxWidth;
             }
-
             canvas.width = width;
             canvas.height = height;
             canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-
             canvas.toBlob(blob => {
                 resolve(new File([blob], fichier.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
             }, 'image/jpeg', qualite);
@@ -155,6 +157,30 @@ function compresserImage(fichier, qualite = 0.8, maxWidth = 1200) {
         img.src = url;
     });
 }
+
+// ===================================
+// PREVIEW IMAGE NOUVELLE LIGNE
+// ===================================
+
+function previewImage(input) {
+    const preview = document.getElementById('preview-image');
+    const btnSuppr = document.getElementById('btn-suppr-image');
+    const fichier = input.files[0];
+    if (!fichier) return;
+    const url = URL.createObjectURL(fichier);
+    preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
+    if (btnSuppr) btnSuppr.style.display = 'block';
+}
+
+function supprimerImageNouvelle() {
+    const preview = document.getElementById('preview-image');
+    const input = document.getElementById('input-image');
+    const btnSuppr = document.getElementById('btn-suppr-image');
+    preview.innerHTML = '';
+    input.value = '';
+    if (btnSuppr) btnSuppr.style.display = 'none';
+}
+
 // ===================================
 // VALIDATION D'UNE CONFITURE
 // ===================================
@@ -255,7 +281,10 @@ async function modifierLigne(btn) {
         <td>
             <input type="file" id="input-image-${id}" accept="image/*" style="display:none;" onchange="previewImageModif(this, '${id}')">
             <button class="btn-valider" onclick="document.getElementById('input-image-${id}').click()">📷 Photo</button>
-            ${c.image ? `<img id="img-actuelle-${id}" src="${c.image}" style="height:40px; border-radius:4px; margin-top:4px;">` : ''}
+            ${c.image ? `
+                <img id="img-actuelle-${id}" src="${c.image}" style="height:40px; border-radius:4px; margin-top:4px;">
+                <button class="btn-supprimer" style="margin-top:4px; font-size:0.8em;" onclick="supprimerImageModif('${id}')">🗑 Supprimer</button>
+            ` : ''}
             <div id="preview-image-${id}" style="margin-top:6px;"></div>
         </td>
         <td class="td-actions">
@@ -265,9 +294,12 @@ async function modifierLigne(btn) {
     `;
 }
 
-// ===================================
-// PREVIEW IMAGE MODIFICATION
-// ===================================
+function supprimerImageModif(id) {
+    const img = document.getElementById(`img-actuelle-${id}`);
+    if (img) img.style.display = 'none';
+    const input = document.getElementById(`input-image-${id}`);
+    if (input) input.dataset.supprimee = 'true';
+}
 
 function previewImageModif(input, id) {
     const preview = document.getElementById(`preview-image-${id}`);
@@ -303,7 +335,9 @@ async function sauvegarderModification(btn, id) {
     let imageUrl = confitureActuelle?.image || '';
 
     const inputImage = document.getElementById(`input-image-${id}`);
-    if (inputImage && inputImage.files[0]) {
+    if (inputImage && inputImage.dataset.supprimee === 'true') {
+        imageUrl = '';
+    } else if (inputImage && inputImage.files[0]) {
         imageUrl = await uploadImage(inputImage.files[0]);
     }
 
@@ -391,16 +425,4 @@ async function confirmerSuppression(btn) {
         }
         tr.remove();
     }
-}
-
-// ===================================
-// PREVIEW IMAGE
-// ===================================
-
-function previewImage(input) {
-    const preview = document.getElementById('preview-image');
-    const fichier = input.files[0];
-    if (!fichier) return;
-    const url = URL.createObjectURL(fichier);
-    preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
 }
