@@ -201,13 +201,14 @@ async function modifierLigne(btn) {
         <td><input class="champ-texte" type="text" value="${m.adresse || ''}"></td>
         <td><input class="champ-texte" type="text" value="${m.theme || ''}"></td>
         <td>
+        ${m.flyer ? `
+            <img id="flyer-actuel-${id}" src="${m.flyer}" style="height:40px; border-radius:4px; margin-top:4px;">
+            <button class="btn-supprimer" style="margin-top:4px; font-size:0.8em;" onclick="supprimerFlyerModif('${id}')">🗑 Supprimer</button>
+        ` : `
             <input type="file" id="input-flyer-${id}" accept="image/*,.pdf" style="display:none;" onchange="previewFlyerModif(this, '${id}')">
             <button class="btn-valider" onclick="document.getElementById('input-flyer-${id}').click()">📎 Importer</button>
-            ${m.flyer ? `
-                <img id="flyer-actuel-${id}" src="${m.flyer}" style="height:40px; border-radius:4px; margin-top:4px;">
-                <button class="btn-supprimer" style="margin-top:4px; font-size:0.8em;" onclick="supprimerFlyerModif('${id}')">🗑 Supprimer</button>
-            ` : ''}
             <div id="preview-flyer-${id}" style="margin-top:6px;"></div>
+        `}
         </td>
         <td class="td-actions">
             <button class="btn-valider" onclick="sauvegarderModification(this, '${id}')">✓ Sauvegarder</button>
@@ -331,4 +332,18 @@ async function confirmerSuppression(btn) {
         if (id) await db.delete('marches', id);
         tr.remove();
     }
+}
+function supprimerFlyerModif(id) {
+    const flyer = document.getElementById(`flyer-actuel-${id}`);
+    const td = flyer.closest('td');
+    if (flyer) flyer.remove();
+
+    td.innerHTML = `
+        <input type="file" id="input-flyer-${id}" accept="image/*,.pdf" style="display:none;" onchange="previewFlyerModif(this, '${id}')">
+        <button class="btn-valider" onclick="document.getElementById('input-flyer-${id}').click()">📎 Importer</button>
+        <div id="preview-flyer-${id}" style="margin-top:6px;"></div>
+    `;
+
+    const input = document.getElementById(`input-flyer-${id}`);
+    if (input) input.dataset.supprimee = 'true';
 }
