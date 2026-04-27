@@ -60,6 +60,7 @@ function ajouterMarche() {
             <input type="file" id="input-flyer" accept="image/*,.pdf" style="display:none;" onchange="previewFlyer(this)">
             <button class="btn-valider" onclick="document.getElementById('input-flyer').click()">📎 Importer</button>
             <div id="preview-flyer" style="margin-top:6px;"></div>
+            <button class="btn-supprimer" id="btn-suppr-flyer" style="display:none; margin-top:4px; font-size:0.8em;" onclick="supprimerFlyerNouveau()">🗑 Supprimer</button>
         </td>
         <td class="td-actions">
             <button class="btn-valider" onclick="validerMarche(this)">✓ Valider</button>
@@ -70,11 +71,12 @@ function ajouterMarche() {
 }
 
 // ===================================
-// PREVIEW FLYER
+// PREVIEW FLYER NOUVELLE LIGNE
 // ===================================
 
 function previewFlyer(input) {
     const preview = document.getElementById('preview-flyer');
+    const btnSuppr = document.getElementById('btn-suppr-flyer');
     const fichier = input.files[0];
     if (!fichier) return;
     if (fichier.type === 'application/pdf') {
@@ -83,6 +85,41 @@ function previewFlyer(input) {
         const url = URL.createObjectURL(fichier);
         preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px; margin-top:4px;">`;
     }
+    if (btnSuppr) btnSuppr.style.display = 'block';
+}
+
+function supprimerFlyerNouveau() {
+    const preview = document.getElementById('preview-flyer');
+    const input = document.getElementById('input-flyer');
+    const btnSuppr = document.getElementById('btn-suppr-flyer');
+    preview.innerHTML = '';
+    input.value = '';
+    if (btnSuppr) btnSuppr.style.display = 'none';
+}
+
+// ===================================
+// UPLOAD FLYER
+// ===================================
+
+async function uploadFlyer(fichier) {
+    const nomFichier = fichier.name;
+    const urlPublique = `https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/public/image/${nomFichier}`;
+
+    const test = await fetch(urlPublique);
+    if (test.ok) return urlPublique;
+
+    const res = await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image/${nomFichier}`, {
+        method: 'POST',
+        headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o`,
+            'Content-Type': fichier.type
+        },
+        body: fichier
+    });
+
+    if (res.ok) return urlPublique;
+    return '';
 }
 
 // ===================================
@@ -103,16 +140,20 @@ async function validerMarche(btn) {
     const ouverture = times[0].value || '—';
     const fermeture = times[1].value || '—';
 
+    const inputFlyer = document.getElementById('input-flyer');
+    let flyerUrl = '';
+    if (inputFlyer && inputFlyer.files[0]) {
+        flyerUrl = await uploadFlyer(inputFlyer.files[0]);
+    }
+
     const result = await db.add('marches', {
         nom,
         date: dateDebut,
         date_fin: dateFin,
         heure_ouverture: ouverture,
         heure_fermeture: fermeture,
-        ville,
-        adresse,
-        theme,
-        flyer: ''
+        ville, adresse, theme,
+        flyer: flyerUrl
     });
 
     tr.className = '';
@@ -125,7 +166,7 @@ async function validerMarche(btn) {
         <td>${ville}</td>
         <td>${adresse}</td>
         <td>${theme}</td>
-        <td>—</td>
+        <td>${flyerUrl ? `<img src="${flyerUrl}" style="height:40px; border-radius:4px;">` : '—'}</td>
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
@@ -162,7 +203,10 @@ async function modifierLigne(btn) {
         <td>
             <input type="file" id="input-flyer-${id}" accept="image/*,.pdf" style="display:none;" onchange="previewFlyerModif(this, '${id}')">
             <button class="btn-valider" onclick="document.getElementById('input-flyer-${id}').click()">📎 Importer</button>
-            ${m.flyer ? `<img id="flyer-actuel-${id}" src="${m.flyer}" style="height:40px; border-radius:4px; margin-top:4px;">` : ''}
+            ${m.flyer ? `
+                <img id="flyer-actuel-${id}" src="${m.flyer}" style="height:40px; border-radius:4px; margin-top:4px;">
+                <button class="btn-supprimer" style="margin-top:4px; font-size:0.8em;" onclick="supprimerFlyerModif('${id}')">🗑 Supprimer</button>
+            ` : ''}
             <div id="preview-flyer-${id}" style="margin-top:6px;"></div>
         </td>
         <td class="td-actions">
@@ -170,6 +214,13 @@ async function modifierLigne(btn) {
             <button class="btn-supprimer" onclick="annulerModification(this, '${id}')">✕ Annuler</button>
         </td>
     `;
+}
+
+function supprimerFlyerModif(id) {
+    const flyer = document.getElementById(`flyer-actuel-${id}`);
+    if (flyer) flyer.style.display = 'none';
+    const input = document.getElementById(`input-flyer-${id}`);
+    if (input) input.dataset.supprimee = 'true';
 }
 
 function previewFlyerModif(input, id) {
@@ -185,6 +236,10 @@ function previewFlyerModif(input, id) {
         preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
     }
 }
+
+// ===================================
+// SAUVEGARDE MODIFICATION
+// ===================================
 
 async function sauvegarderModification(btn, id) {
     const tr = btn.closest('tr');
@@ -205,8 +260,10 @@ async function sauvegarderModification(btn, id) {
     let flyerUrl = marcheActuel?.flyer || '';
 
     const inputFlyer = document.getElementById(`input-flyer-${id}`);
-    if (inputFlyer && inputFlyer.files[0]) {
-        flyerUrl = URL.createObjectURL(inputFlyer.files[0]);
+    if (inputFlyer && inputFlyer.dataset.supprimee === 'true') {
+        flyerUrl = '';
+    } else if (inputFlyer && inputFlyer.files[0]) {
+        flyerUrl = await uploadFlyer(inputFlyer.files[0]);
     }
 
     await db.update('marches', id, {
@@ -215,9 +272,7 @@ async function sauvegarderModification(btn, id) {
         date_fin: dateFin,
         heure_ouverture: ouverture,
         heure_fermeture: fermeture,
-        ville,
-        adresse,
-        theme,
+        ville, adresse, theme,
         flyer: flyerUrl
     });
 
@@ -238,6 +293,10 @@ async function sauvegarderModification(btn, id) {
         </td>
     `;
 }
+
+// ===================================
+// ANNULER MODIFICATION
+// ===================================
 
 async function annulerModification(btn, id) {
     const tr = btn.closest('tr');
