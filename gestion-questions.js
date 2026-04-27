@@ -1,43 +1,20 @@
 // ===================================
-// DONNÉES DE TEST
+// CHARGEMENT DES QUESTIONS
 // ===================================
 
-const questions = [
-    {
-        id: 1,
-        prenom: "Marie",
-        email: "marie@exemple.fr",
-        message: "Bonjour, est-ce que vous avez de la confiture de fraise disponible ? Je voudrais en commander 3 pots.",
-        date: "2026-04-20",
-        lu: false
-    },
-    {
-        id: 2,
-        prenom: "Pierre",
-        email: "pierre@exemple.fr",
-        message: "Serez-vous présents au marché de Rambouillet en juin ?",
-        date: "2026-04-22",
-        lu: true
-    },
-    {
-        id: 3,
-        prenom: "Sophie",
-        email: "sophie@exemple.fr",
-        message: "Bonjour, je souhaite commander des confitures pour offrir. Livrez-vous à domicile ?",
-        date: "2026-04-23",
-        lu: false
-    }
-];
+async function chargerQuestions() {
+    const questions = await db.get('questions');
+    afficherQuestions(questions);
+}
 
 // ===================================
 // AFFICHAGE
 // ===================================
 
-function afficherQuestions() {
+function afficherQuestions(questions) {
     const liste = document.getElementById('liste-questions');
     liste.innerHTML = '';
 
-    // Trier : non lus en premier
     const triees = [...questions].sort((a, b) => a.lu - b.lu);
 
     if (triees.length === 0) {
@@ -48,6 +25,7 @@ function afficherQuestions() {
     triees.forEach(q => {
         const div = document.createElement('div');
         div.className = `carte-question ${q.lu ? 'lu' : 'non-lu'}`;
+        div.dataset.id = q.id;
         div.innerHTML = `
             <div class="question-header">
                 <div class="question-meta">
@@ -57,7 +35,7 @@ function afficherQuestions() {
                     <span class="question-date">${q.date}</span>
                 </div>
                 <div class="question-actions">
-                    <button class="btn-valider" onclick="repondre(${q.id})">✉ Répondre</button>
+                    <button class="btn-valider" onclick="repondre(${q.id}, '${q.email}', '${q.prenom}', \`${q.message}\`)">✉ Répondre</button>
                     <button class="btn-supprimer" onclick="supprimerQuestion(${q.id})">Supprimer</button>
                 </div>
             </div>
@@ -71,26 +49,23 @@ function afficherQuestions() {
 // RÉPONDRE PAR MAIL
 // ===================================
 
-function repondre(id) {
-    const q = questions.find(q => q.id === id);
+async function repondre(id, email, prenom, message) {
     const sujet = encodeURIComponent(`Réponse à votre message — Les Confitures de Mamina`);
-    const corps = encodeURIComponent(`Bonjour ${q.prenom},\n\nMerci pour votre message :\n"${q.message}"\n\n`);
-    window.location.href = `mailto:${q.email}?subject=${sujet}&body=${corps}`;
-    
-    // Marquer comme lu
-    q.lu = true;
-    afficherQuestions();
+    const corps = encodeURIComponent(`Bonjour ${prenom},\n\nMerci pour votre message :\n"${message}"\n\n`);
+    window.location.href = `mailto:${email}?subject=${sujet}&body=${corps}`;
+
+    await db.update('questions', id, { lu: true });
+    chargerQuestions();
 }
 
 // ===================================
 // SUPPRESSION
 // ===================================
 
-function supprimerQuestion(id) {
+async function supprimerQuestion(id) {
     if (confirm("Supprimer cette question ?")) {
-        const index = questions.findIndex(q => q.id === id);
-        questions.splice(index, 1);
-        afficherQuestions();
+        await db.delete('questions', id);
+        chargerQuestions();
     }
 }
 
@@ -98,4 +73,4 @@ function supprimerQuestion(id) {
 // LANCEMENT
 // ===================================
 
-afficherQuestions();
+chargerQuestions();
