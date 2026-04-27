@@ -3,7 +3,8 @@
 // ===================================
 
 async function chargerQuestions() {
-    const questions = await db.get('questions');
+    const result = await db.get('questions');
+    const questions = Array.isArray(result) ? result : [];
     afficherQuestions(questions);
 }
 
