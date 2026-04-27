@@ -346,10 +346,10 @@ async function sauvegarderModification(btn, id) {
     let imageUrl = confitureActuelle?.image || '';
 
     const inputImage = document.getElementById(`input-image-${id}`);
-    if (inputImage && inputImage.dataset.supprimee === 'true') {
-        imageUrl = '';
-    } else if (inputImage && inputImage.files[0]) {
+    if (inputImage && inputImage.files[0]) {
         imageUrl = await uploadImage(inputImage.files[0]);
+    } else if (inputImage && inputImage.dataset.supprimee === 'true') {
+        imageUrl = '';
     }
 
     await db.update('confitures', id, {
