@@ -27,9 +27,8 @@ async add(table, data) {
         },
         body: JSON.stringify(data)
     });
-    const json = await res.json();
-    console.log('Supabase response:', json);
-    return json;
+    const text = await res.text();
+    return text ? JSON.parse(text) : [];
 },
 
     async delete(table, id) {
