@@ -102,6 +102,9 @@ function supprimerFlyerNouveau() {
 // ===================================
 
 async function uploadFlyer(fichier) {
+    if (fichier.type.startsWith('image/')) {
+        fichier = await compresserImage(fichier, 0.8, 1200);
+    }
     const nomFichier = fichier.name;
     const urlPublique = `https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/public/image/${nomFichier}`;
 
@@ -346,4 +349,26 @@ function supprimerFlyerModif(id) {
 
     const input = document.getElementById(`input-flyer-${id}`);
     if (input) input.dataset.supprimee = 'true';
+}
+function compresserImage(fichier, qualite = 0.8, maxWidth = 1200) {
+    return new Promise(resolve => {
+        const img = new Image();
+        const url = URL.createObjectURL(fichier);
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            if (width > maxWidth) {
+                height = Math.round(height * maxWidth / width);
+                width = maxWidth;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            canvas.toBlob(blob => {
+                resolve(new File([blob], fichier.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+            }, 'image/jpeg', qualite);
+        };
+        img.src = url;
+    });
 }
