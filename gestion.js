@@ -191,14 +191,14 @@ async function validerLigne(btn) {
     const textareas = tr.querySelectorAll('textarea');
     const selects = tr.querySelectorAll('select');
 
-    const nom         = inputs[0].value || 'Sans nom';
-    const fruits      = inputs[1].value || '';
+    const nom = inputs[0].value || 'Sans nom';
+    const fruits = inputs[1].value || '';
     const ingredients = inputs[2].value || '';
     const desc_courte = inputs[3].value || '';
     const desc_longue = textareas[0].value || '';
-    const type        = selects[0].value;
-    const categories  = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
-    const presence    = selects[1].value;
+    const type = selects[0].value;
+    const categories = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
+    const presence = selects[1].value;
 
     const inputImage = document.getElementById('input-image');
     let imageUrl = '';
@@ -278,15 +278,16 @@ async function modifierLigne(btn) {
         <td><input class="champ-texte" type="text" value="${c.ingredients || ''}"></td>
         <td><input class="champ-texte" type="text" value="${c.description_courte || ''}"></td>
         <td><textarea class="champ-texte" rows="3">${c.description_longue || ''}</textarea></td>
-        <td>
-            <input type="file" id="input-image-${id}" accept="image/*" style="display:none;" onchange="previewImageModif(this, '${id}')">
-            <button class="btn-valider" onclick="document.getElementById('input-image-${id}').click()">📷 Photo</button>
-            ${c.image ? `
-                <img id="img-actuelle-${id}" src="${c.image}" style="height:40px; border-radius:4px; margin-top:4px;">
-                <button class="btn-supprimer" style="margin-top:4px; font-size:0.8em;" onclick="supprimerImageModif('${id}')">🗑 Supprimer</button>
-            ` : ''}
-            <div id="preview-image-${id}" style="margin-top:6px;"></div>
-        </td>
+ <td>
+    ${c.image ? `
+        <img id="img-actuelle-${id}" src="${c.image}" style="height:40px; border-radius:4px; margin-top:4px;">
+        <button class="btn-supprimer" style="margin-top:4px; font-size:0.8em;" onclick="supprimerImageModif('${id}')">🗑 Supprimer</button>
+    ` : `
+        <input type="file" id="input-image-${id}" accept="image/*" style="display:none;" onchange="previewImageModif(this, '${id}')">
+        <button class="btn-valider" onclick="document.getElementById('input-image-${id}').click()">📷 Photo</button>
+        <div id="preview-image-${id}" style="margin-top:6px;"></div>
+    `}
+</td>
         <td class="td-actions">
             <button class="btn-valider" onclick="sauvegarderModification(this, '${id}')">✓ Sauvegarder</button>
             <button class="btn-supprimer" onclick="annulerModification(this, '${id}')">✕ Annuler</button>
@@ -296,7 +297,17 @@ async function modifierLigne(btn) {
 
 function supprimerImageModif(id) {
     const img = document.getElementById(`img-actuelle-${id}`);
-    if (img) img.style.display = 'none';
+    const td = img.closest('td');
+    if (img) img.remove();
+
+    // Affiche le bouton d'upload seulement après suppression
+    td.innerHTML = `
+        <input type="file" id="input-image-${id}" accept="image/*" style="display:none;" onchange="previewImageModif(this, '${id}')">
+        <button class="btn-valider" onclick="document.getElementById('input-image-${id}').click()">📷 Photo</button>
+        <div id="preview-image-${id}" style="margin-top:6px;"></div>
+    `;
+
+    // Marque l'image comme supprimée
     const input = document.getElementById(`input-image-${id}`);
     if (input) input.dataset.supprimee = 'true';
 }
@@ -321,14 +332,14 @@ async function sauvegarderModification(btn, id) {
     const textareas = tr.querySelectorAll('textarea');
     const selects = tr.querySelectorAll('select');
 
-    const nom         = inputs[0].value || 'Sans nom';
-    const fruits      = inputs[1].value || '';
+    const nom = inputs[0].value || 'Sans nom';
+    const fruits = inputs[1].value || '';
     const ingredients = inputs[2].value || '';
     const desc_courte = inputs[3].value || '';
     const desc_longue = textareas[0].value || '';
-    const type        = selects[0].value;
-    const categories  = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
-    const presence    = selects[1].value;
+    const type = selects[0].value;
+    const categories = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
+    const presence = selects[1].value;
 
     const confitures = await db.get('confitures');
     const confitureActuelle = confitures.find(c => c.id == id);
