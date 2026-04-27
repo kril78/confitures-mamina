@@ -110,19 +110,16 @@ function ajouterLigne() {
 
 async function uploadImage(fichier) {
     const nomFichier = fichier.name;
-    
-    // Tente d'abord de supprimer l'ancienne version
-    await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image`, {
-        method: 'DELETE',
-        headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ prefixes: [nomFichier] })
-    });
+    const urlPublique = `https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/public/image/${nomFichier}`;
 
-    // Upload la nouvelle version
+    // Vérifie si l'image existe déjà
+    const test = await fetch(urlPublique);
+    if (test.ok) {
+        // Image déjà présente → on retourne juste l'URL
+        return urlPublique;
+    }
+
+    // Sinon on uploade
     const res = await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image/${nomFichier}`, {
         method: 'POST',
         headers: {
@@ -133,12 +130,9 @@ async function uploadImage(fichier) {
         body: fichier
     });
 
-    if (res.ok) {
-        return `https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/public/image/${nomFichier}`;
-    }
+    if (res.ok) return urlPublique;
     return '';
 }
-
 // ===================================
 // VALIDATION D'UNE CONFITURE
 // ===================================
