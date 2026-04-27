@@ -173,7 +173,7 @@ async function validerLigne(btn) {
     });
 
     tr.className = '';
-    tr.dataset.id = result[0].id;
+    tr.dataset.id = result && result[0] ? result[0].id : '';
     tr.innerHTML = `
         <td>${nom}</td>
         <td>${type}</td>
@@ -183,7 +183,7 @@ async function validerLigne(btn) {
         <td>${ingredients}</td>
         <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
         <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
-        <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
+        <td>${(imageUrl || data.image) ? `<img src="${imageUrl || data.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
@@ -275,6 +275,11 @@ async function sauvegarderModification(btn, id) {
     const presence    = selects[1].value;
 
     const inputImage = document.getElementById(`input-image-${id}`);
+    // Récupère l'image actuelle si pas de nouvelle
+const confitures = await db.get('confitures');
+const confitureActuelle = confitures.find(c => c.id == id);
+const imageActuelle = confitureActuelle?.image || '';
+if (!imageUrl) imageUrl = imageActuelle;
     let imageUrl = '';
     if (inputImage && inputImage.files[0]) {
         imageUrl = await uploadImage(inputImage.files[0]);
@@ -301,7 +306,7 @@ async function sauvegarderModification(btn, id) {
         <td>${ingredients}</td>
         <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
         <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
-        <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
+        <td>${(imageUrl || data.image) ? `<img src="${imageUrl || data.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
