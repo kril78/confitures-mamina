@@ -110,6 +110,17 @@ function ajouterLigne() {
 
 async function uploadImage(fichier) {
     const nomFichier = fichier.name;
+    
+    // Tente d'abord de supprimer l'ancienne version
+    await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image/${nomFichier}`, {
+        method: 'DELETE',
+        headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o`
+        }
+    });
+
+    // Upload la nouvelle version
     const res = await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image/${nomFichier}`, {
         method: 'POST',
         headers: {
@@ -327,13 +338,34 @@ async function confirmerSuppression(btn) {
     if (confirm("Supprimer cette confiture ?")) {
         const tr = btn.closest('tr');
         const id = tr.dataset.id;
+
         if (id) {
+            // Récupère l'image de cette confiture
+            const confitures = await db.get('confitures');
+            const c = confitures.find(c => c.id == id);
+
+            if (c && c.image) {
+                // Vérifie si d'autres confitures utilisent la même image
+                const autresUtilisateurs = confitures.filter(x => x.id != id && x.image === c.image);
+                
+                if (autresUtilisateurs.length === 0) {
+                    // Personne d'autre n'utilise cette image → on la supprime
+                    const nomFichier = c.image.split('/').pop();
+                    await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image/${nomFichier}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o',
+                            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o`
+                        }
+                    });
+                }
+            }
+
             await db.delete('confitures', id);
         }
         tr.remove();
     }
 }
-
 // ===================================
 // PREVIEW IMAGE
 // ===================================
