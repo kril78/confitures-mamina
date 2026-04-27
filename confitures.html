@@ -86,39 +86,86 @@
         </div>
     </footer>
 
-    <script src="supabase.js"></script>
-    <script>
-    db.get('confitures').then(confitures => {
+<script src="supabase.js"></script>
+<script>
+let toutesLesConfitures = [];
 
-        // Tableau
-        const tbody = document.getElementById('corps-tableau');
-        confitures.forEach(c => {
-            const tr = document.createElement('tr');
-            tr.style.cursor = 'pointer';
-            tr.innerHTML = `<td>${c.nom}</td><td>${c.type}</td><td>${c.fruits}</td>`;
-            tr.onclick = () => {
-                window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
-            };
-            tbody.appendChild(tr);
-        });
+db.get('confitures').then(confitures => {
+    toutesLesConfitures = confitures;
+    afficherTableau(confitures);
+    afficherCarrousel(confitures);
+});
 
-        // Carrousel aléatoire
-        const melange = [...confitures].sort(() => Math.random() - 0.5).slice(0, 6);
-        const carrousel = document.getElementById('carrousel-tendances');
-        melange.forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'carte-tendance';
-            div.style.cursor = 'pointer';
-            div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
-            div.innerHTML = `
-                <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
-                <p>${c.nom}</p>
-            `;
-            carrousel.appendChild(div);
-        });
+// ===================================
+// TABLEAU
+// ===================================
 
+function afficherTableau(confitures) {
+    const tbody = document.getElementById('corps-tableau');
+    tbody.innerHTML = '';
+    confitures.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.style.cursor = 'pointer';
+        tr.innerHTML = `<td>${c.nom}</td><td>${c.type}</td><td>${c.fruits}</td>`;
+        tr.onclick = () => {
+            window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+        };
+        tbody.appendChild(tr);
     });
-    </script>
+}
+
+// ===================================
+// CARROUSEL ALÉATOIRE
+// ===================================
+
+function afficherCarrousel(confitures) {
+    const melange = [...confitures].sort(() => Math.random() - 0.5).slice(0, 6);
+    const carrousel = document.getElementById('carrousel-tendances');
+    carrousel.innerHTML = '';
+    melange.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'carte-tendance';
+        div.style.cursor = 'pointer';
+        div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+        div.innerHTML = `
+            <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
+            <p>${c.nom}</p>
+        `;
+        carrousel.appendChild(div);
+    });
+}
+
+// ===================================
+// RECHERCHE + FILTRES
+// ===================================
+
+function filtrer() {
+    const recherche = document.getElementById('recherche').value.toLowerCase();
+    const cochees = [...document.querySelectorAll('.filtre-panneau input:checked')].map(cb => cb.value);
+
+    const resultats = toutesLesConfitures.filter(c => {
+        const matchRecherche = c.nom.toLowerCase().includes(recherche)
+            || (c.fruits && c.fruits.toLowerCase().includes(recherche));
+
+        const matchFiltre = cochees.length === 0
+            || cochees.includes(c.type.toLowerCase())
+            || cochees.includes(c.categorie?.toLowerCase())
+            || (cochees.includes('temporaire') && c.presence === 'Temporaire');
+
+        return matchRecherche && matchFiltre;
+    });
+
+    afficherTableau(resultats);
+}
+
+// Écoute la recherche en temps réel
+document.getElementById('recherche').addEventListener('input', filtrer);
+
+// Écoute les checkboxes
+document.querySelectorAll('.filtre-panneau input').forEach(cb => {
+    cb.addEventListener('change', filtrer);
+});
+</script>
 </body>
 
 </html>
