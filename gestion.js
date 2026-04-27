@@ -112,14 +112,9 @@ async function uploadImage(fichier) {
     const nomFichier = fichier.name;
     const urlPublique = `https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/public/image/${nomFichier}`;
 
-    // Vérifie si l'image existe déjà
     const test = await fetch(urlPublique);
-    if (test.ok) {
-        // Image déjà présente → on retourne juste l'URL
-        return urlPublique;
-    }
+    if (test.ok) return urlPublique;
 
-    // Sinon on uploade
     const res = await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image/${nomFichier}`, {
         method: 'POST',
         headers: {
@@ -178,7 +173,7 @@ async function validerLigne(btn) {
         <td>${ingredients}</td>
         <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
         <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
-        <td>${(imageUrl || data.image) ? `<img src="${imageUrl || data.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
+        <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
@@ -244,6 +239,10 @@ async function modifierLigne(btn) {
     `;
 }
 
+// ===================================
+// PREVIEW IMAGE MODIFICATION
+// ===================================
+
 function previewImageModif(input, id) {
     const preview = document.getElementById(`preview-image-${id}`);
     const imgActuelle = document.getElementById(`img-actuelle-${id}`);
@@ -253,6 +252,10 @@ function previewImageModif(input, id) {
     if (imgActuelle) imgActuelle.style.display = 'none';
     preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
 }
+
+// ===================================
+// SAUVEGARDE MODIFICATION
+// ===================================
 
 async function sauvegarderModification(btn, id) {
     const tr = btn.closest('tr');
@@ -269,16 +272,46 @@ async function sauvegarderModification(btn, id) {
     const categories  = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
     const presence    = selects[1].value;
 
-    // Récupère l'image actuelle
     const confitures = await db.get('confitures');
     const confitureActuelle = confitures.find(c => c.id == id);
     let imageUrl = confitureActuelle?.image || '';
 
-    // Si nouvelle image uploadée → on remplace
     const inputImage = document.getElementById(`input-image-${id}`);
     if (inputImage && inputImage.files[0]) {
         imageUrl = await uploadImage(inputImage.files[0]);
     }
+
+    await db.update('confitures', id, {
+        nom, fruits, ingredients,
+        description_courte: desc_courte,
+        description_longue: desc_longue,
+        type, categorie: categories, presence,
+        image: imageUrl
+    });
+
+    tr.className = '';
+    tr.dataset.id = id;
+    tr.innerHTML = `
+        <td>${nom}</td>
+        <td>${type}</td>
+        <td>${fruits}</td>
+        <td>${categories}</td>
+        <td>${presence}</td>
+        <td>${ingredients}</td>
+        <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
+        <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
+        <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
+        <td class="td-actions">
+            <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
+            <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+        </td>
+    `;
+}
+
+// ===================================
+// ANNULER MODIFICATION
+// ===================================
+
 async function annulerModification(btn, id) {
     const tr = btn.closest('tr');
     const confitures = await db.get('confitures');
@@ -312,34 +345,28 @@ async function confirmerSuppression(btn) {
         const id = tr.dataset.id;
 
         if (id) {
-            // Récupère l'image de cette confiture
             const confitures = await db.get('confitures');
             const c = confitures.find(c => c.id == id);
 
             if (c && c.image) {
-                // Vérifie si d'autres confitures utilisent la même image
                 const autresUtilisateurs = confitures.filter(x => x.id != id && x.image === c.image);
-                
                 if (autresUtilisateurs.length === 0) {
-                    // Personne d'autre n'utilise cette image → on la supprime
                     const nomFichier = c.image.split('/').pop();
-                    await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image`, {
+                    await fetch(`https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/image/${nomFichier}`, {
                         method: 'DELETE',
                         headers: {
                             'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o',
-                            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ prefixes: [nomFichier] })
+                            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZnlidWZ0b25wZXdxeXR4d3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMTAzMzgsImV4cCI6MjA5MjU4NjMzOH0.DLyq_zU4AzNWqT6rcz6tQw26groCxiUL8Pt3SzIIl-o`
+                        }
                     });
                 }
             }
-
             await db.delete('confitures', id);
         }
         tr.remove();
     }
 }
+
 // ===================================
 // PREVIEW IMAGE
 // ===================================
@@ -350,5 +377,4 @@ function previewImage(input) {
     if (!fichier) return;
     const url = URL.createObjectURL(fichier);
     preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
-}
 }
