@@ -55,3 +55,4 @@ async add(table, data) {
     const text = await res.text();
     return text ? JSON.parse(text) : [];
 }
+}
