@@ -10,7 +10,6 @@ function verifierMdp() {
         document.getElementById('msg-erreur').style.display = 'block';
         document.getElementById('champ-mdp').value = '';
     }
-}
 
 // ===================================
 // CHARGEMENT DES CONFITURES
@@ -38,7 +37,10 @@ function afficherLigne(c) {
         <td>${c.description_courte ? c.description_courte.substring(0, 50) + '...' : '—'}</td>
         <td>${c.description_longue ? c.description_longue.substring(0, 50) + '...' : '—'}</td>
         <td>${c.image ? `<img src="${c.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
-        <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
+        <td>
+            <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
+            <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+        </td>
     `;
     tbody.appendChild(tr);
 }
@@ -189,6 +191,7 @@ async function confirmerSuppression(btn) {
         tr.remove();
     }
 }
+
 // ===================================
 // PREVIEW IMAGE
 // ===================================
@@ -199,4 +202,122 @@ function previewImage(input) {
     if (!fichier) return;
     const url = URL.createObjectURL(fichier);
     preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
+}
+};
+// ===================================
+// MODIFICATION D'UNE CONFITURE
+// ===================================
+
+async function modifierLigne(btn) {
+    const tr = btn.closest('tr');
+    const id = tr.dataset.id;
+
+    // Récupère les données actuelles depuis Supabase
+    const confitures = await db.get('confitures');
+    const c = confitures.find(c => c.id == id);
+
+    tr.className = 'ligne-saisie';
+    tr.innerHTML = `
+        <td><input class="champ-texte" type="text" value="${c.nom || ''}"></td>
+        <td>
+            <select class="champ-select">
+                <option value="Confiture" ${c.type === 'Confiture' ? 'selected' : ''}>Confiture</option>
+                <option value="Gelée" ${c.type === 'Gelée' ? 'selected' : ''}>Gelée</option>
+                <option value="Autre" ${c.type === 'Autre' ? 'selected' : ''}>Autre</option>
+            </select>
+        </td>
+        <td><input class="champ-texte" type="text" value="${c.fruits || ''}"></td>
+        <td>
+            <div class="filtre-custom">
+                <button class="filtre-bouton" onclick="this.parentElement.classList.toggle('ouvert')">
+                    Catégories ▾
+                </button>
+                <div class="filtre-panneau">
+                    <label class="filtre-option"><input type="checkbox" value="Fruits rouges" ${c.categorie?.includes('Fruits rouges') ? 'checked' : ''}> Fruits rouges</label>
+                    <label class="filtre-option"><input type="checkbox" value="Agrumes" ${c.categorie?.includes('Agrumes') ? 'checked' : ''}> Agrumes</label>
+                    <label class="filtre-option"><input type="checkbox" value="Fruits à noyau" ${c.categorie?.includes('Fruits à noyau') ? 'checked' : ''}> Fruits à noyau</label>
+                    <label class="filtre-option"><input type="checkbox" value="Exotiques" ${c.categorie?.includes('Exotiques') ? 'checked' : ''}> Exotiques</label>
+                    <label class="filtre-option"><input type="checkbox" value="Mélange" ${c.categorie?.includes('Mélange') ? 'checked' : ''}> Mélange</label>
+                </div>
+            </div>
+        </td>
+        <td>
+            <select class="champ-select">
+                <option value="Permanente" ${c.presence === 'Permanente' ? 'selected' : ''}>Permanente</option>
+                <option value="Temporaire" ${c.presence === 'Temporaire' ? 'selected' : ''}>Temporaire</option>
+            </select>
+        </td>
+        <td><input class="champ-texte" type="text" value="${c.ingredients || ''}"></td>
+        <td><input class="champ-texte" type="text" value="${c.description_courte || ''}"></td>
+        <td><textarea class="champ-texte" rows="3">${c.description_longue || ''}</textarea></td>
+        <td>
+            <input type="file" id="input-image-${id}" accept="image/*" style="display:none;" onchange="previewImage(this)">
+            <button class="btn-valider" onclick="document.getElementById('input-image-${id}').click()">📷 Photo</button>
+            ${c.image ? `<img src="${c.image}" style="height:40px; border-radius:4px; margin-top:4px;">` : ''}
+            <div id="preview-image" style="margin-top:6px;"></div>
+        </td>
+        <td class="td-actions">
+            <button class="btn-valider" onclick="sauvegarderModification(this, ${id})">✓ Sauvegarder</button>
+            <button class="btn-supprimer" onclick="annulerModification(this, ${id})">✕</button>
+        </td>
+    `;
+}
+
+async function sauvegarderModification(btn, id) {
+    const tr = btn.closest('tr');
+    const inputs = tr.querySelectorAll('input[type="text"]');
+    const textareas = tr.querySelectorAll('textarea');
+    const selects = tr.querySelectorAll('select');
+
+    const nom         = inputs[0].value || 'Sans nom';
+    const fruits      = inputs[1].value || '';
+    const ingredients = inputs[2].value || '';
+    const desc_courte = inputs[3].value || '';
+    const desc_longue = textareas[0].value || '';
+    const type        = selects[0].value;
+    const categories  = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
+    const presence    = selects[1].value;
+
+    const inputImage = document.getElementById(`input-image-${id}`);
+    let imageUrl = '';
+    if (inputImage && inputImage.files[0]) {
+        imageUrl = await uploadImage(inputImage.files[0]);
+    }
+
+    const data = {
+        nom, fruits, ingredients,
+        description_courte: desc_courte,
+        description_longue: desc_longue,
+        type, categorie: categories, presence
+    };
+    if (imageUrl) data.image = imageUrl;
+
+    await db.update('confitures', id, data);
+
+    tr.dataset.id = id;
+    tr.className = '';
+    tr.innerHTML = `
+        <td>${nom}</td>
+        <td>${type}</td>
+        <td>${fruits}</td>
+        <td>${categories}</td>
+        <td>${presence}</td>
+        <td>${ingredients}</td>
+        <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
+        <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
+        <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
+        <td>
+            <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
+            <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+        </td>
+    `;
+}
+
+async function annulerModification(btn, id) {
+    const confitures = await db.get('confitures');
+    const c = confitures.find(c => c.id == id);
+    const tr = btn.closest('tr');
+    tr.className = '';
+    afficherLigne(c);
+    tr.remove();
 }
