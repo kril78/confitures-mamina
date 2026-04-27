@@ -50,7 +50,7 @@ function afficherQuestions(questions) {
                     <button class="btn-supprimer" onclick="supprimerQuestion(${q.id})">Supprimer</button>
                 </div>
             </div>
-<p class="question-message" id="msg-${q.id}" style="display:none;">${messageComplet}</p>
+<p class="question-message" id="msg-${q.id}" style="display:none;">${messageComplet.replace(/`/g, "'")}</p>
 ${peutDeplier ? `
     <button class="btn-deplier" id="btn-${q.id}" onclick="deplierMessage(${q.id}, \`${messageComplet}\`)">
         Lire ▾
