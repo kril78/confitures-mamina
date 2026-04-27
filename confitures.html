@@ -135,27 +135,43 @@
     // ===================================
     
     function filtrer() {
-    const recherche = document.getElementById('recherche').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const cochees = [...document.querySelectorAll('.filtre-panneau input:checked')].map(cb => cb.value);
+    const recherche = document.getElementById('recherche').value.toLowerCase();
+    const cochees = [...document.querySelectorAll('.filtre-panneau input:checked')].map(cb => cb.value.toLowerCase());
 
     const resultats = toutesLesConfitures.filter(c => {
-        const nom = (c.nom || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        const fruits = (c.fruits || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        const type = (c.type || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        const categorie = (c.categorie || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        const presence = (c.presence || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const nom = (c.nom || '').toLowerCase();
+        const fruits = (c.fruits || '').toLowerCase();
+        const type = (c.type || '').toLowerCase();
+        const categorie = (c.categorie || '').toLowerCase();
+        const presence = (c.presence || '').toLowerCase();
+        const tout = `${type} ${categorie} ${presence}`;
 
-        const matchRecherche = nom.includes(recherche) || fruits.includes(recherche);
+        const matchRecherche = recherche === '' || nom.includes(recherche) || fruits.includes(recherche);
 
-        const matchFiltre = cochees.length === 0 || cochees.some(f => {
-            const fn = f.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            return type.includes(fn) || categorie.includes(fn) || presence.includes(fn);
-        });
+        const matchFiltre = cochees.length === 0 || cochees.every(f => tout.includes(f));
 
         return matchRecherche && matchFiltre;
     });
 
     afficherTableau(resultats);
+    afficherCarrousel(resultats);
+    function afficherCarrousel(confitures) {
+        const source = confitures;
+    const melange = [...source].sort(() => Math.random() - 0.5).slice(0, 6);
+    const carrousel = document.getElementById('carrousel-tendances');
+    carrousel.innerHTML = '';
+    melange.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'carte-tendance';
+        div.style.cursor = 'pointer';
+        div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+        div.innerHTML = `
+            <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
+            <p>${c.nom}</p>
+        `;
+        carrousel.appendChild(div);
+    });
+}
 }
     
     // Écoute la recherche en temps réel
