@@ -261,10 +261,10 @@ async function sauvegarderModification(btn, id) {
     let flyerUrl = marcheActuel?.flyer || '';
 
     const inputFlyer = document.getElementById(`input-flyer-${id}`);
-    if (inputFlyer && inputFlyer.dataset.supprimee === 'true') {
-        flyerUrl = '';
-    } else if (inputFlyer && inputFlyer.files[0]) {
+    if (inputFlyer && inputFlyer.files[0]) {
         flyerUrl = await uploadFlyer(inputFlyer.files[0]);
+    } else if (inputFlyer && inputFlyer.dataset.supprimee === 'true') {
+        flyerUrl = '';
     }
 
     await db.update('marches', id, {
