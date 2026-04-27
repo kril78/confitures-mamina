@@ -133,6 +133,7 @@ async function uploadImage(fichier) {
     if (res.ok) return urlPublique;
     return '';
 }
+
 // ===================================
 // VALIDATION D'UNE CONFITURE
 // ===================================
@@ -268,46 +269,16 @@ async function sauvegarderModification(btn, id) {
     const categories  = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
     const presence    = selects[1].value;
 
+    // Récupère l'image actuelle
+    const confitures = await db.get('confitures');
+    const confitureActuelle = confitures.find(c => c.id == id);
+    let imageUrl = confitureActuelle?.image || '';
+
+    // Si nouvelle image uploadée → on remplace
     const inputImage = document.getElementById(`input-image-${id}`);
-    // Récupère l'image actuelle si pas de nouvelle
-const confitures = await db.get('confitures');
-const confitureActuelle = confitures.find(c => c.id == id);
-const imageActuelle = confitureActuelle?.image || '';
-if (!imageUrl) imageUrl = imageActuelle;
-    let imageUrl = '';
     if (inputImage && inputImage.files[0]) {
         imageUrl = await uploadImage(inputImage.files[0]);
     }
-
-    const data = {
-        nom, fruits, ingredients,
-        description_courte: desc_courte,
-        description_longue: desc_longue,
-        type, categorie: categories, presence
-    };
-    if (imageUrl) data.image = imageUrl;
-
-    await db.update('confitures', id, data);
-
-    tr.className = '';
-    tr.dataset.id = id;
-    tr.innerHTML = `
-        <td>${nom}</td>
-        <td>${type}</td>
-        <td>${fruits}</td>
-        <td>${categories}</td>
-        <td>${presence}</td>
-        <td>${ingredients}</td>
-        <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
-        <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
-        <td>${(imageUrl || data.image) ? `<img src="${imageUrl || data.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
-        <td class="td-actions">
-            <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
-            <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
-        </td>
-    `;
-}
-
 async function annulerModification(btn, id) {
     const tr = btn.closest('tr');
     const confitures = await db.get('confitures');
@@ -379,4 +350,5 @@ function previewImage(input) {
     if (!fichier) return;
     const url = URL.createObjectURL(fichier);
     preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
+}
 }
