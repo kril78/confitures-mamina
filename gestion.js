@@ -10,6 +10,7 @@ function verifierMdp() {
         document.getElementById('msg-erreur').style.display = 'block';
         document.getElementById('champ-mdp').value = '';
     }
+}
 
 // ===================================
 // CHARGEMENT DES CONFITURES
@@ -37,7 +38,7 @@ function afficherLigne(c) {
         <td>${c.description_courte ? c.description_courte.substring(0, 50) + '...' : '—'}</td>
         <td>${c.description_longue ? c.description_longue.substring(0, 50) + '...' : '—'}</td>
         <td>${c.image ? `<img src="${c.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
-        <td>
+        <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
         </td>
@@ -150,19 +151,16 @@ async function validerLigne(btn) {
         imageUrl = await uploadImage(inputImage.files[0]);
     }
 
-    await db.add('confitures', {
-        nom,
-        fruits,
-        ingredients,
+    const result = await db.add('confitures', {
+        nom, fruits, ingredients,
         description_courte: desc_courte,
         description_longue: desc_longue,
-        type,
-        categorie: categories,
-        presence,
+        type, categorie: categories, presence,
         image: imageUrl
     });
 
     tr.className = '';
+    tr.dataset.id = result[0].id;
     tr.innerHTML = `
         <td>${nom}</td>
         <td>${type}</td>
@@ -173,37 +171,13 @@ async function validerLigne(btn) {
         <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
         <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
         <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
-        <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
+        <td class="td-actions">
+            <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
+            <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+        </td>
     `;
 }
 
-// ===================================
-// CONFIRMATION SUPPRESSION
-// ===================================
-
-async function confirmerSuppression(btn) {
-    if (confirm("Supprimer cette confiture ?")) {
-        const tr = btn.closest('tr');
-        const id = tr.dataset.id;
-        if (id) {
-            await db.delete('confitures', id);
-        }
-        tr.remove();
-    }
-}
-
-// ===================================
-// PREVIEW IMAGE
-// ===================================
-
-function previewImage(input) {
-    const preview = document.getElementById('preview-image');
-    const fichier = input.files[0];
-    if (!fichier) return;
-    const url = URL.createObjectURL(fichier);
-    preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
-}
-};
 // ===================================
 // MODIFICATION D'UNE CONFITURE
 // ===================================
@@ -212,7 +186,6 @@ async function modifierLigne(btn) {
     const tr = btn.closest('tr');
     const id = tr.dataset.id;
 
-    // Récupère les données actuelles depuis Supabase
     const confitures = await db.get('confitures');
     const c = confitures.find(c => c.id == id);
 
@@ -251,16 +224,26 @@ async function modifierLigne(btn) {
         <td><input class="champ-texte" type="text" value="${c.description_courte || ''}"></td>
         <td><textarea class="champ-texte" rows="3">${c.description_longue || ''}</textarea></td>
         <td>
-            <input type="file" id="input-image-${id}" accept="image/*" style="display:none;" onchange="previewImage(this)">
+            <input type="file" id="input-image-${id}" accept="image/*" style="display:none;" onchange="previewImageModif(this, '${id}')">
             <button class="btn-valider" onclick="document.getElementById('input-image-${id}').click()">📷 Photo</button>
-            ${c.image ? `<img src="${c.image}" style="height:40px; border-radius:4px; margin-top:4px;">` : ''}
-            <div id="preview-image" style="margin-top:6px;"></div>
+            ${c.image ? `<img id="img-actuelle-${id}" src="${c.image}" style="height:40px; border-radius:4px; margin-top:4px;">` : ''}
+            <div id="preview-image-${id}" style="margin-top:6px;"></div>
         </td>
         <td class="td-actions">
-            <button class="btn-valider" onclick="sauvegarderModification(this, ${id})">✓ Sauvegarder</button>
-            <button class="btn-supprimer" onclick="annulerModification(this, ${id})">✕</button>
+            <button class="btn-valider" onclick="sauvegarderModification(this, '${id}')">✓ Sauvegarder</button>
+            <button class="btn-supprimer" onclick="annulerModification(this, '${id}')">✕ Annuler</button>
         </td>
     `;
+}
+
+function previewImageModif(input, id) {
+    const preview = document.getElementById(`preview-image-${id}`);
+    const imgActuelle = document.getElementById(`img-actuelle-${id}`);
+    const fichier = input.files[0];
+    if (!fichier) return;
+    const url = URL.createObjectURL(fichier);
+    if (imgActuelle) imgActuelle.style.display = 'none';
+    preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
 }
 
 async function sauvegarderModification(btn, id) {
@@ -294,8 +277,8 @@ async function sauvegarderModification(btn, id) {
 
     await db.update('confitures', id, data);
 
-    tr.dataset.id = id;
     tr.className = '';
+    tr.dataset.id = id;
     tr.innerHTML = `
         <td>${nom}</td>
         <td>${type}</td>
@@ -306,7 +289,7 @@ async function sauvegarderModification(btn, id) {
         <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
         <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
         <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
-        <td>
+        <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
         </td>
@@ -314,10 +297,51 @@ async function sauvegarderModification(btn, id) {
 }
 
 async function annulerModification(btn, id) {
+    const tr = btn.closest('tr');
     const confitures = await db.get('confitures');
     const c = confitures.find(c => c.id == id);
-    const tr = btn.closest('tr');
     tr.className = '';
-    afficherLigne(c);
-    tr.remove();
+    tr.dataset.id = id;
+    tr.innerHTML = `
+        <td>${c.nom}</td>
+        <td>${c.type || '—'}</td>
+        <td>${c.fruits || '—'}</td>
+        <td>${c.categorie || '—'}</td>
+        <td>${c.presence || '—'}</td>
+        <td>${c.ingredients || '—'}</td>
+        <td>${c.description_courte ? c.description_courte.substring(0, 50) + '...' : '—'}</td>
+        <td>${c.description_longue ? c.description_longue.substring(0, 50) + '...' : '—'}</td>
+        <td>${c.image ? `<img src="${c.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
+        <td class="td-actions">
+            <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
+            <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+        </td>
+    `;
+}
+
+// ===================================
+// CONFIRMATION SUPPRESSION
+// ===================================
+
+async function confirmerSuppression(btn) {
+    if (confirm("Supprimer cette confiture ?")) {
+        const tr = btn.closest('tr');
+        const id = tr.dataset.id;
+        if (id) {
+            await db.delete('confitures', id);
+        }
+        tr.remove();
+    }
+}
+
+// ===================================
+// PREVIEW IMAGE
+// ===================================
+
+function previewImage(input) {
+    const preview = document.getElementById('preview-image');
+    const fichier = input.files[0];
+    if (!fichier) return;
+    const url = URL.createObjectURL(fichier);
+    preview.innerHTML = `<img src="${url}" style="height:50px; border-radius:4px;">`;
 }
