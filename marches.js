@@ -6,14 +6,18 @@ let tousLesMarches = [];
 let moisAffiche = new Date().getMonth();
 let anneeAffichee = new Date().getFullYear();
 
+const aujourdHui = new Date();
+aujourdHui.setHours(0,0,0,0);
+
 const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin',
                  'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const JOURS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
 
-db.get('marches').then(data => {
-    const aujourdHui = new Date();
-    aujourdHui.setHours(0,0,0,0);
+// ===================================
+// CHARGEMENT
+// ===================================
 
+db.get('marches').then(data => {
     tousLesMarches = data.filter(m => new Date(m.date + 'T00:00:00') >= aujourdHui);
     tousLesMarches.sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -21,16 +25,6 @@ db.get('marches').then(data => {
     afficherCalendrier();
     afficherListe();
 });
-
-const aujourdHui = new Date();
-aujourdHui.setHours(0,0,0,0);
-
-tousLesMarches = donneesTest.filter(m => new Date(m.date + 'T00:00:00') >= aujourdHui);
-tousLesMarches.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-afficherProchain();
-afficherCalendrier();
-afficherListe();
 
 // ===================================
 // PROCHAIN MARCHÉ
@@ -78,7 +72,6 @@ function afficherCalendrier() {
     const grille = document.getElementById('calendrier-grille');
     grille.innerHTML = '';
 
-    // Entêtes jours
     JOURS_FR.forEach(j => {
         const div = document.createElement('div');
         div.className = 'jour-entete';
@@ -106,13 +99,11 @@ function afficherCalendrier() {
         const dateStr = `${anneeAffichee}-${String(moisAffiche + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const dateActuelle = new Date(dateStr + 'T00:00:00');
 
-        // Weekends
         const jourSemaine = dateActuelle.getDay();
         if (jourSemaine === 0 || jourSemaine === 6) {
             div.classList.add('weekend');
         }
 
-        // Périodes de marché
         tousLesMarches.forEach(m => {
             const debut = new Date(m.date + 'T00:00:00');
             const fin = new Date((m.date_fin || m.date) + 'T00:00:00');
@@ -125,7 +116,6 @@ function afficherCalendrier() {
             }
         });
 
-        // Aujourd'hui
         if (dateActuelle.getTime() === aujourdHui.getTime()) {
             div.classList.add('aujourd-hui');
         }
