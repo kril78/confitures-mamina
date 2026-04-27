@@ -28,7 +28,7 @@ db.get('confitures').then(confitures => {
 // ===================================
 
 function afficherFiche(c, toutes) {
-    const imagePath = c.image || `https://csfybuftonpewqytxwpk.supabase.co/storage/v1/object/public/image/${c.nom.toLowerCase().replace(/ /g, '-').replace(/&/g, 'et')}.jpg`;
+    const imagePath = c.image || '';
     document.getElementById('fiche-contenu').innerHTML = `
 
         <div class="fiche-bloc">
@@ -75,17 +75,19 @@ function afficherFiche(c, toutes) {
         <div class="fiche-suggestions">
             <h3>Vous aimerez aussi</h3>
             <div class="carrousel-tendances">
-                ${toutes
-                    .filter(x => x.nom !== c.nom)
-                    .slice(0, 6)
-                    .map(x => `
-                        <div class="carte-tendance" onclick="window.location.href='fiche.html?nom=${encodeURIComponent(x.nom)}'">
-                            <img src="images/confitures/${x.nom.toLowerCase().replace(/ /g, '-').replace(/&/g, 'et')}.jpg" 
-                                 alt="${x.nom}"
-                                 onerror="this.style.display='none'"
-                            <p>${x.nom}</p>
-                        </div>
-                    `).join('')}
+            const suggestions = toutes.filter(x => x.nom !== c.nom && x.categorie === c.categorie);
+            const fallback = suggestions.length >= 3 ? suggestions : toutes.filter(x => x.nom !== c.nom);
+            ${toutes
+                .filter(x => x.nom !== c.nom && x.categorie === c.categorie)
+                .slice(0, 6)
+                .map(x => `
+                    <div class="carte-tendance" onclick="window.location.href='fiche.html?nom=${encodeURIComponent(x.nom)}'">
+                        <img src="${x.image || ''}" 
+                             alt="${x.nom}"
+                             onerror="this.style.display='none'">
+                        <p>${x.nom}</p>
+                    </div>
+                `).join('')}
             </div>
         </div>
     `;
