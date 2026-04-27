@@ -29,8 +29,8 @@ function afficherQuestions(questions) {
 
     triees.forEach(q => {
         const messageComplet = q.massage || '';
-        const messageCourt = messageComplet.length > 100 
-            ? messageComplet.substring(0, 100) + '...' 
+        const messageCourt = messageComplet.length > 100
+            ? messageComplet.substring(0, 100) + '...'
             : messageComplet;
         const peutDeplier = messageComplet.length > 100;
 
@@ -50,12 +50,16 @@ function afficherQuestions(questions) {
                     <button class="btn-supprimer" onclick="supprimerQuestion(${q.id})">Supprimer</button>
                 </div>
             </div>
-            <p class="question-message" id="msg-${q.id}">${messageCourt}</p>
-            ${peutDeplier ? `
-                <button class="btn-deplier" id="btn-${q.id}" onclick="deplierMessage(${q.id}, \`${messageComplet}\`)">
-                    Voir plus ▾
-                </button>
-            ` : ''}
+<p class="question-message" id="msg-${q.id}" style="display:none;">${messageComplet}</p>
+${peutDeplier ? `
+    <button class="btn-deplier" id="btn-${q.id}" onclick="deplierMessage(${q.id}, \`${messageComplet}\`)">
+        Lire ▾
+    </button>
+` : `
+    <button class="btn-deplier" id="btn-${q.id}" onclick="deplierMessage(${q.id}, \`${messageComplet}\`)">
+        Lire ▾
+    </button>
+`}
         `;
         liste.appendChild(div);
     });
@@ -69,12 +73,12 @@ function deplierMessage(id, messageComplet) {
     const msg = document.getElementById(`msg-${id}`);
     const btn = document.getElementById(`btn-${id}`);
     
-    if (btn.textContent.includes('Voir plus')) {
-        msg.textContent = messageComplet;
-        btn.textContent = 'Voir moins ▴';
+    if (msg.style.display === 'none') {
+        msg.style.display = 'block';
+        btn.textContent = 'Fermer ▴';
     } else {
-        msg.textContent = messageComplet.substring(0, 100) + '...';
-        btn.textContent = 'Voir plus ▾';
+        msg.style.display = 'none';
+        btn.textContent = 'Lire ▾';
     }
 }
 
