@@ -10,19 +10,17 @@ const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin',
                  'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const JOURS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
 
-fetch('marches.json')
-    .then(r => r.json())
-    .then(data => {
-        const aujourdHui = new Date();
-        aujourdHui.setHours(0,0,0,0);
+db.get('marches').then(data => {
+    const aujourdHui = new Date();
+    aujourdHui.setHours(0,0,0,0);
 
-        tousLesMarches = data.filter(m => new Date(m.date + 'T00:00:00') >= aujourdHui);
-        tousLesMarches.sort((a, b) => new Date(a.date) - new Date(b.date));
+    tousLesMarches = data.filter(m => new Date(m.date + 'T00:00:00') >= aujourdHui);
+    tousLesMarches.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        afficherProchain();
-        afficherCalendrier();
-        afficherListe();
-    });
+    afficherProchain();
+    afficherCalendrier();
+    afficherListe();
+});
 
 const aujourdHui = new Date();
 aujourdHui.setHours(0,0,0,0);
