@@ -569,7 +569,7 @@ h1:hover {
    PAGE GESTION - Contenu principal
    =================================== */
 
-.admin-main {
+   .admin-main {
     max-width: 95%;
     margin: 40px auto;
     padding: 0 20px;
@@ -621,6 +621,7 @@ h1:hover {
     padding: 12px 16px;
     border-bottom: 1px solid #333;
     vertical-align: middle;
+    height: 70px;
 }
 
 .tableau-admin tr:last-child td {
@@ -723,9 +724,7 @@ h1:hover {
     display: flex;
     gap: 10px;
     align-items: center;
-    vertical-align: middle;
 }
-
 /* Adaptation du filtre custom pour le fond sombre */
 .ligne-saisie .filtre-bouton {
     background-color: #333;
@@ -860,4 +859,7 @@ footer p {
     margin: 0;
     padding-top: 12px;
     border-top: 1px solid #333;
+}
+.tableau-admin td img {
+    display: block;
 }
