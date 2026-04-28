@@ -15,7 +15,8 @@ async function verifierMdp() {
 
     if (resultat.access_token) {
         localStorage.setItem('sb_token', resultat.access_token);
-        document.getElementById('ecran-mdp').style.display = 'none';
+        document.getElementById('ecran-mdp').remove(); // supprime complètement l'écran
+        chargerConfitures(); // charge les données après connexion
     } else {
         document.getElementById('msg-erreur').style.display = 'block';
         document.getElementById('champ-mdp').value = '';
@@ -26,10 +27,23 @@ async function verifierMdp() {
 // CHARGEMENT DES CONFITURES
 // ===================================
 
-db.get('confitures').then(confitures => {
-    confitures.forEach(c => afficherLigne(c));
-});
+function chargerConfitures() {
+    document.getElementById('corps-admin').innerHTML = '';
+    db.get('confitures').then(confitures => {
+        confitures.forEach(c => afficherLigne(c));
+    });
+}
 
+async function init() {
+    const connecte = await verifierSession();
+    if (connecte) {
+        document.getElementById('ecran-mdp').style.display = 'none';
+        chargerConfitures();
+    }
+    // Sinon on ne fait rien : l'écran mdp reste affiché
+}
+
+init();
 // ===================================
 // AFFICHAGE LECTURE
 // ===================================
@@ -67,7 +81,6 @@ function ajouterLigne() {
         existante.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
     }
-
     const tbody = document.getElementById('corps-admin');
     const tr = document.createElement('tr');
     tr.className = 'ligne-saisie';
