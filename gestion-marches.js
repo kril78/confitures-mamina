@@ -1,7 +1,36 @@
 // ===================================
 // CHARGEMENT DES MARCHÉS
 // ===================================
+async function verifierMdp() {
+    const email = document.getElementById('champ-email').value.trim();
+    const mdp = document.getElementById('champ-mdp').value;
 
+    if (!email || !mdp) {
+        document.getElementById('msg-erreur').style.display = 'block';
+        return;
+    }
+
+    const resultat = await connecter(email, mdp);
+
+    if (resultat.access_token) {
+        localStorage.setItem('sb_token', resultat.access_token);
+        document.getElementById('ecran-mdp').remove();
+        chargerMarches();
+    } else {
+        document.getElementById('msg-erreur').style.display = 'block';
+        document.getElementById('champ-mdp').value = '';
+    }
+}
+
+async function init() {
+    const connecte = await verifierSession();
+    if (connecte) {
+        document.getElementById('ecran-mdp').remove();
+        chargerMarches();
+    }
+}
+
+init();
 db.get('marches').then(marches => {
     marches.forEach(m => afficherLigne(m));
 });
