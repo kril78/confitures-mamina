@@ -70,9 +70,13 @@ function deplierMessage(id) {
     const msg = document.getElementById(`msg-${id}`);
     const btn = document.getElementById(`btn-${id}`);
 
-    const ouvert = msg.style.display !== 'none';
-    msg.style.display = ouvert ? 'none' : 'block';
-    btn.textContent = ouvert ? 'Lire ▾' : 'Fermer ▴';
+    if (msg.style.display === 'none' || msg.style.display === '') {
+        msg.style.display = 'block';
+        btn.textContent = 'Fermer ▴';
+    } else {
+        msg.style.display = 'none';
+        btn.textContent = 'Lire ▾';
+    }
 }
 
 // ===================================
