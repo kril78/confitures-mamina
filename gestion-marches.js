@@ -1,6 +1,14 @@
 // ===================================
 // CHARGEMENT DES MARCHÉS
 // ===================================
+
+async function chargerMarches() {
+    const tbody = document.getElementById('corps-marches');
+    tbody.innerHTML = '';
+    const marches = await db.get('marches');
+    marches.forEach(m => afficherLigne(m));
+}
+
 async function verifierMdp() {
     const email = document.getElementById('champ-email').value.trim();
     const mdp = document.getElementById('champ-mdp').value;
@@ -30,10 +38,6 @@ async function init() {
     }
 }
 
-init();
-db.get('marches').then(marches => {
-    marches.forEach(m => afficherLigne(m));
-});
 
 // ===================================
 // AFFICHAGE LECTURE
