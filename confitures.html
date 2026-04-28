@@ -1,114 +1,188 @@
-// ===================================
-// CHARGEMENT DES QUESTIONS
-// ===================================
+<!DOCTYPE html>
+<html lang="fr">
 
-async function chargerQuestions() {
-    const result = await db.get('questions');
-    const questions = Array.isArray(result) ? result : [];
-    afficherQuestions(questions);
-}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nos Confitures - Les Confitures de Mamina</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
-// ===================================
-// AFFICHAGE
-// ===================================
+<body>
+    <header>
+        <h1>Les Confitures de Mamina</h1>
+        <p>Confitures artisanales préparées dans un chaudron en cuivre familial, avec les fruits du jardin et les
+            recettes d'autrefois.</p>
+        <nav>
+            <a href="index.html">Accueil</a>
+            <a href="confitures.html">Confitures</a>
+            <a href="marches.html">Marchés</a>
+            <a href="contact.html">Contact</a>
+            <a href="gestion.html">Gestion</a>
+        </nav>
+    </header>
 
-function afficherQuestions(questions) {
-    const liste = document.getElementById('liste-questions');
-    liste.innerHTML = '';
+    <main>
+        <section class="intro-confitures">
+            <h2>Notre gamme de confitures</h2>
+            <p>Chaque pot naît d'une cuisson lente au chaudron de cuivre, avec 60% de fruits pour préserver toute leur
+                richesse. Découvrez nos créations préparées au fil des saisons.</p>
+        </section>
 
-    const triees = [...questions].sort((a, b) => {
-        if (a.lu !== b.lu) return a.lu - b.lu;
-        return new Date(b.date) - new Date(a.date);
-    });
-
-    if (triees.length === 0) {
-        liste.innerHTML = '<p style="color:#aaa; text-align:center; padding:40px;">Aucune question pour le moment.</p>';
-        return;
-    }
-
-    triees.forEach(q => {
-        const messageComplet = q.message || '';
-        const messageCourt = messageComplet.length > 100
-            ? messageComplet.substring(0, 100) + '...'
-            : messageComplet;
-        const peutDeplier = messageComplet.length > 100;
-
-        const div = document.createElement('div');
-        div.className = `carte-question ${q.lu ? 'lu' : 'non-lu'}`;
-        div.dataset.id = q.id;
-
-        const messageSafe = messageComplet.replace(/`/g, "'");
-
-        div.innerHTML = `
-        <div class="question-header">
-            <div class="question-meta">
-                ${!q.lu ? '<span class="badge-nouveau">Nouveau</span>' : ''}
-                <span class="question-prenom">${q.prenom}</span>
-                <span class="question-email">${q.email}</span>
-                <span class="question-date">${q.date}</span>
+        <section class="barre-recherche-filtres">
+            <div class="zone-recherche">
+                <input type="text" id="recherche" placeholder="Rechercher une confiture (ex : framboise)">
             </div>
-            <div class="question-actions">
-                <button class="btn-deplier" id="btn-${q.id}" onclick="deplierMessage(${q.id})">Lire ▾</button>
-                <button class="btn-valider" onclick="repondre(${q.id})">✉ Répondre</button>
-                <button class="btn-supprimer" onclick="supprimerQuestion(${q.id})">Supprimer</button>
+            <div class="zone-filtres">
+                <label>Filtrer par :</label>
+                <div class="filtre-custom">
+                    <button class="filtre-bouton" onclick="this.parentElement.classList.toggle('ouvert')">
+                        Tous les types ▾
+                    </button>
+                    <div class="filtre-panneau">
+                        <label class="filtre-option"><input type="checkbox" value="Confiture"> Confiture</label>
+                        <label class="filtre-option"><input type="checkbox" value="Gelée"> Gelée</label>
+                        <label class="filtre-option"><input type="checkbox" value="Fruits rouges"> Fruits rouges</label>
+                        <label class="filtre-option"><input type="checkbox" value="Agrumes"> Agrumes</label>
+                        <label class="filtre-option"><input type="checkbox" value="Fruits à noyau"> Fruits à noyau</label>
+                        <label class="filtre-option"><input type="checkbox" value="Exotiques"> Exotiques</label>
+                        <label class="filtre-option"><input type="checkbox" value="Mélange"> Mélange</label>
+                        <label class="filtre-option"><input type="checkbox" value="Temporaire"> Temporaire</label>
+                    </div>
+                </div>
             </div>
+        </section>
+
+        <section class="section-tendances">
+            <h3>Les goûts tendance</h3>
+            <div class="carrousel-tendances" id="carrousel-tendances"></div>
+        </section>
+
+        <section class="section-tableau">
+            <h3>Toute notre gamme</h3>
+            <table class="tableau-confitures">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Fruits</th>
+                    </tr>
+                </thead>
+                <tbody id="corps-tableau"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 Les Confitures de Mamina</p>
+        <div class="footer-coordonnees">
+            <a href="tel:+33100000000">📞 01 ** ** ** **</a>
+            <a href="mailto:mamina@confitures.fr">✉️ amperrin@gmail.com</a>
         </div>
-        <div class="question-message" id="msg-${q.id}" style="display:none;"></div>
-    `;
+    </footer>
+
+    <script src="supabase.js"></script>
+    <script>
+    let toutesLesConfitures = [];
     
-    // On injecte le texte séparément pour éviter tout problème de caractères spéciaux
-    liste.appendChild(div); // d'abord on ajoute au DOM
-    document.getElementById(`msg-${q.id}`).textContent = messageComplet; // ensuite on injecte
+    db.get('confitures').then(confitures => {
+        toutesLesConfitures = confitures;
+        afficherTableau(confitures);
+        afficherCarrousel(confitures);
+    });
+    
+    // ===================================
+    // TABLEAU
+    // ===================================
+    
+    function afficherTableau(confitures) {
+        const tbody = document.getElementById('corps-tableau');
+        tbody.innerHTML = '';
+        confitures.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.style.cursor = 'pointer';
+            tr.innerHTML = `<td>${c.nom}</td><td>${c.type}</td><td>${c.fruits}</td>`;
+            tr.onclick = () => {
+                window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+            };
+            tbody.appendChild(tr);
+        });
+    }
+    
+    // ===================================
+    // CARROUSEL ALÉATOIRE
+    // ===================================
+    
+    function afficherCarrousel(confitures) {
+        const melange = [...confitures].sort(() => Math.random() - 0.5).slice(0, 6);
+        const carrousel = document.getElementById('carrousel-tendances');
+        carrousel.innerHTML = '';
+        melange.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'carte-tendance';
+            div.style.cursor = 'pointer';
+            div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+            div.innerHTML = `
+                <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
+                <p>${c.nom}</p>
+            `;
+            carrousel.appendChild(div);
+        });
+    }
+    
+    // ===================================
+    // RECHERCHE + FILTRES
+    // ===================================
+    
+    function filtrer() {
+    const recherche = document.getElementById('recherche').value.toLowerCase();
+    const cochees = [...document.querySelectorAll('.filtre-panneau input:checked')].map(cb => cb.value.toLowerCase());
+
+    const resultats = toutesLesConfitures.filter(c => {
+        const nom = (c.nom || '').toLowerCase();
+        const fruits = (c.fruits || '').toLowerCase();
+        const type = (c.type || '').toLowerCase();
+        const categorie = (c.categorie || '').toLowerCase();
+        const presence = (c.presence || '').toLowerCase();
+        const tout = `${type} ${categorie} ${presence}`;
+
+        const matchRecherche = recherche === '' || nom.includes(recherche) || fruits.includes(recherche);
+
+        const matchFiltre = cochees.length === 0 || cochees.every(f => tout.includes(f));
+
+        return matchRecherche && matchFiltre;
+    });
+
+    afficherTableau(resultats);
+    afficherCarrousel(resultats);
+    function afficherCarrousel(confitures) {
+        const source = confitures;
+    const melange = [...source].sort(() => Math.random() - 0.5).slice(0, 6);
+    const carrousel = document.getElementById('carrousel-tendances');
+    carrousel.innerHTML = '';
+    melange.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'carte-tendance';
+        div.style.cursor = 'pointer';
+        div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+        div.innerHTML = `
+            <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
+            <p>${c.nom}</p>
+        `;
+        carrousel.appendChild(div);
     });
 }
-
-// ===================================
-// DÉPLIER MESSAGE
-// ===================================
-
-function deplierMessage(id) {
-    const msg = document.getElementById(`msg-${id}`);
-    const btn = document.getElementById(`btn-${id}`);
-
-    if (msg.style.display === 'none' || msg.style.display === '') {
-        msg.style.display = 'block';
-        btn.textContent = 'Fermer ▴';
-    } else {
-        msg.style.display = 'none';
-        btn.textContent = 'Lire ▾';
-    }
 }
+    
+    // Écoute la recherche en temps réel
+    document.getElementById('recherche').addEventListener('input', filtrer);
+    
+    // Écoute les checkboxes
+    document.querySelectorAll('.filtre-panneau input').forEach(cb => {
+        cb.addEventListener('change', filtrer);
+    });
+    </script>
+</body>
 
-// ===================================
-// RÉPONDRE PAR MAIL
-// ===================================
-
-async function repondre(id) {
-    const q_email = document.querySelector(`[data-id="${id}"] .question-email`).textContent;
-    const q_prenom = document.querySelector(`[data-id="${id}"] .question-prenom`).textContent;
-    const q_message = document.getElementById(`msg-${id}`).textContent;
-
-    const sujet = encodeURIComponent(`Réponse à votre message — Les Confitures de Mamina`);
-    const corps = encodeURIComponent(`Bonjour ${q_prenom},\n\nMerci pour votre message :\n"${q_message}"\n\n`);
-    window.location.href = `mailto:${q_email}?subject=${sujet}&body=${corps}`;
-
-    await db.update('questions', id, { lu: true });
-    chargerQuestions();
-}
-
-// ===================================
-// SUPPRESSION
-// ===================================
-
-async function supprimerQuestion(id) {
-    if (confirm("Supprimer cette question ?")) {
-        await db.delete('questions', id);
-        chargerQuestions();
-    }
-}
-
-// ===================================
-// LANCEMENT
-// ===================================
-
+</html>
 chargerQuestions();
