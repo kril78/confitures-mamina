@@ -20,6 +20,26 @@
     <div style="text-align: center;">
         <div class="badge-admin">⚙ Administration</div>
         <h2 style="color: var(--couleur-dore); margin: 20px 0;">Accès restreint</h2>
+        <input id="champ-email" class="champ-texte" type="email" 
+               placeholder="Email..."
+               style="width: 250px; text-align: center; margin-bottom: 15px;"
+               onkeydown="if(event.key==='Enter') verifierMdp()">
+        <br>
+        <input id="champ-mdp" class="champ-texte" type="password" 
+               placeholder="Mot de passe..."
+               style="width: 250px; text-align: center; margin-bottom: 15px;"
+               onkeydown="if(event.key==='Enter') verifierMdp()">
+        <br>
+        <button class="btn-valider" onclick="verifierMdp()">Entrer</button>
+        <a href="index.html" style="display: block; margin-top: 20px; color: #aaa; font-family: Georgia, serif; font-size: 0.9em;">← Retour à l'accueil</a>
+        <p id="msg-erreur" style="color: #cc4444; margin-top: 15px; display: none;">
+            Email ou mot de passe incorrect.
+        </p>
+    </div>
+</div>
+    <div style="text-align: center;">
+        <div class="badge-admin">⚙ Administration</div>
+        <h2 style="color: var(--couleur-dore); margin: 20px 0;">Accès restreint</h2>
         <input id="champ-mdp" class="champ-texte" type="password" 
                placeholder="Mot de passe..." 
                style="width: 250px; text-align: center; margin-bottom: 15px;"
@@ -44,7 +64,9 @@
     </div>
 
     <div class="admin-main">
-        <button class="btn-ajouter" onclick="ajouterLigne()">+ Ajouter une confiture</button>
+        <div style="position: sticky; top: 0; z-index: 100; background-color: #1a1a1a; padding: 15px 0;">
+            <button class="btn-ajouter" onclick="ajouterLigne()">+ Ajouter une confiture</button>
+        </div>
 
         <table class="tableau-admin">
             <thead>
@@ -73,3 +95,4 @@
 </body>
 
 </html>
+
