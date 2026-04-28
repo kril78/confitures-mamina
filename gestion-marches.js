@@ -35,9 +35,13 @@ function afficherLigne(m) {
 // AJOUT D'UN MARCHÉ
 // ===================================
 
-function ajouterMarche() {
+function ajouterLigne() {
     const existante = document.querySelector('.ligne-saisie');
-    if (existante) existante.remove();
+    if (existante) {
+        alert('Veuillez d\'abord valider ou annuler la saisie en cours.');
+        existante.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
 
     const tbody = document.getElementById('corps-marches');
     const tr = document.createElement('tr');
