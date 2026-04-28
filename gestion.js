@@ -52,7 +52,11 @@ function afficherLigne(c) {
 
 function ajouterLigne() {
     const existante = document.querySelector('.ligne-saisie');
-    if (existante) existante.remove();
+    if (existante) {
+        alert('Veuillez d\'abord valider ou annuler la saisie en cours.');
+        existante.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
 
     const tbody = document.getElementById('corps-admin');
     const tr = document.createElement('tr');
