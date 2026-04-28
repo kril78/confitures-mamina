@@ -13,7 +13,8 @@ async function verifierMdp() {
     const resultat = await connecter(email, mdp);
 
     if (resultat.access_token) {
-        localStorage.setItem('sb_token', resultat.access_token);
+localStorage.setItem('sb_token', resultat.access_token);
+localStorage.setItem('sb_refresh_token', resultat.refresh_token); // ← indispensable
         document.getElementById('ecran-mdp').remove();
         chargerQuestions();
     } else {
