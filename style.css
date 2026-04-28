@@ -573,7 +573,11 @@ h1:hover {
     max-width: 95%;
     margin: 40px auto;
     padding: 0 20px;
+}
+
+.admin-main table {
     overflow-x: auto;
+    display: block;
 }
 
 .btn-ajouter {
