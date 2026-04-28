@@ -1,13 +1,6 @@
 // ===================================
-// CHARGEMENT DES MARCHÉS
+// AUTHENTIFICATION
 // ===================================
-
-async function chargerMarches() {
-    const tbody = document.getElementById('corps-marches');
-    tbody.innerHTML = '';
-    const marches = await db.get('marches');
-    marches.forEach(m => afficherLigne(m));
-}
 
 async function verifierMdp() {
     const email = document.getElementById('champ-email').value.trim();
@@ -22,8 +15,9 @@ async function verifierMdp() {
 
     if (resultat.access_token) {
         localStorage.setItem('sb_token', resultat.access_token);
+        localStorage.setItem('sb_refresh_token', resultat.refresh_token);
         document.getElementById('ecran-mdp').remove();
-        chargerMarches();
+        await chargerMarches();
     } else {
         document.getElementById('msg-erreur').style.display = 'block';
         document.getElementById('champ-mdp').value = '';
@@ -34,10 +28,22 @@ async function init() {
     const connecte = await verifierSession();
     if (connecte) {
         document.getElementById('ecran-mdp').remove();
-        chargerMarches();
+        await chargerMarches();
     }
 }
 
+init();
+
+// ===================================
+// CHARGEMENT DES MARCHÉS
+// ===================================
+
+async function chargerMarches() {
+    const tbody = document.getElementById('corps-marches');
+    tbody.innerHTML = '';
+    const marches = await db.get('marches');
+    marches.forEach(m => afficherLigne(m));
+}
 
 // ===================================
 // AFFICHAGE LECTURE
@@ -187,13 +193,9 @@ async function validerMarche(btn) {
     }
 
     const result = await db.add('marches', {
-        nom,
-        date: dateDebut,
-        date_fin: dateFin,
-        heure_ouverture: ouverture,
-        heure_fermeture: fermeture,
-        ville, adresse, theme,
-        flyer: flyerUrl
+        nom, date: dateDebut, date_fin: dateFin,
+        heure_ouverture: ouverture, heure_fermeture: fermeture,
+        ville, adresse, theme, flyer: flyerUrl
     });
 
     tr.className = '';
@@ -219,9 +221,15 @@ async function validerMarche(btn) {
 // ===================================
 
 async function modifierLigne(btn) {
+    const existante = document.querySelector('.ligne-saisie');
+    if (existante) {
+        alert('Veuillez d\'abord valider ou annuler la saisie en cours.');
+        existante.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
     const tr = btn.closest('tr');
     const id = tr.dataset.id;
-
     const marches = await db.get('marches');
     const m = marches.find(m => m.id == id);
 
@@ -259,7 +267,13 @@ async function modifierLigne(btn) {
 
 function supprimerFlyerModif(id) {
     const flyer = document.getElementById(`flyer-actuel-${id}`);
-    if (flyer) flyer.style.display = 'none';
+    const td = flyer.closest('td');
+    if (flyer) flyer.remove();
+    td.innerHTML = `
+        <input type="file" id="input-flyer-${id}" accept="image/*,.pdf" style="display:none;" onchange="previewFlyerModif(this, '${id}')">
+        <button class="btn-valider" onclick="document.getElementById('input-flyer-${id}').click()">📎 Importer</button>
+        <div id="preview-flyer-${id}" style="margin-top:6px;"></div>
+    `;
     const input = document.getElementById(`input-flyer-${id}`);
     if (input) input.dataset.supprimee = 'true';
 }
@@ -308,13 +322,9 @@ async function sauvegarderModification(btn, id) {
     }
 
     await db.update('marches', id, {
-        nom,
-        date: dateDebut,
-        date_fin: dateFin,
-        heure_ouverture: ouverture,
-        heure_fermeture: fermeture,
-        ville, adresse, theme,
-        flyer: flyerUrl
+        nom, date: dateDebut, date_fin: dateFin,
+        heure_ouverture: ouverture, heure_fermeture: fermeture,
+        ville, adresse, theme, flyer: flyerUrl
     });
 
     tr.className = '';
@@ -362,7 +372,7 @@ async function annulerModification(btn, id) {
 }
 
 // ===================================
-// CONFIRMATION SUPPRESSION
+// SUPPRESSION
 // ===================================
 
 async function confirmerSuppression(btn) {
@@ -373,20 +383,11 @@ async function confirmerSuppression(btn) {
         tr.remove();
     }
 }
-function supprimerFlyerModif(id) {
-    const flyer = document.getElementById(`flyer-actuel-${id}`);
-    const td = flyer.closest('td');
-    if (flyer) flyer.remove();
 
-    td.innerHTML = `
-        <input type="file" id="input-flyer-${id}" accept="image/*,.pdf" style="display:none;" onchange="previewFlyerModif(this, '${id}')">
-        <button class="btn-valider" onclick="document.getElementById('input-flyer-${id}').click()">📎 Importer</button>
-        <div id="preview-flyer-${id}" style="margin-top:6px;"></div>
-    `;
+// ===================================
+// COMPRESSION IMAGE
+// ===================================
 
-    const input = document.getElementById(`input-flyer-${id}`);
-    if (input) input.dataset.supprimee = 'true';
-}
 function compresserImage(fichier, qualite = 0.8, maxWidth = 1200) {
     return new Promise(resolve => {
         const img = new Image();
