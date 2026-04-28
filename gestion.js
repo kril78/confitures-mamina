@@ -2,9 +2,19 @@
 // PROTECTION MOT DE PASSE
 // ===================================
 
-function verifierMdp() {
+async function verifierMdp() {
+    const email = document.getElementById('champ-email').value.trim();
     const mdp = document.getElementById('champ-mdp').value;
-    if (mdp === '1245') {
+
+    if (!email || !mdp) {
+        document.getElementById('msg-erreur').style.display = 'block';
+        return;
+    }
+
+    const resultat = await connecter(email, mdp);
+
+    if (resultat.access_token) {
+        localStorage.setItem('sb_token', resultat.access_token);
         document.getElementById('ecran-mdp').style.display = 'none';
     } else {
         document.getElementById('msg-erreur').style.display = 'block';
