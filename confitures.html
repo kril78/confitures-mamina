@@ -40,24 +40,23 @@ function afficherQuestions(questions) {
         const messageSafe = messageComplet.replace(/`/g, "'");
 
         div.innerHTML = `
-            <div class="question-header">
-                <div class="question-meta">
-                    ${!q.lu ? '<span class="badge-nouveau">Nouveau</span>' : ''}
-                    <span class="question-prenom">${q.prenom}</span>
-                    <span class="question-email">${q.email}</span>
-                    <span class="question-date">${q.date}</span>
-                </div>
-                <div class="question-actions">
-                    <button class="btn-valider" onclick="repondre(${q.id}, '${q.email}', '${q.prenom}', \`${messageSafe}\`)">✉ Répondre</button>
-                    <button class="btn-supprimer" onclick="supprimerQuestion(${q.id})">Supprimer</button>
-                </div>
-            </div>
-            <p class="question-apercu">${messageCourt}</p>
-            ${peutDeplier ? `
-                <p class="question-message" id="msg-${q.id}" style="display:none;">${messageSafe}</p>
-                <button class="btn-deplier" id="btn-${q.id}" onclick="deplierMessage(${q.id})">Lire ▾</button>
-            ` : ''}
-        `;
+    <div class="question-header">
+        <div class="question-meta">
+            ${!q.lu ? '<span class="badge-nouveau">Nouveau</span>' : ''}
+            <span class="question-prenom">${q.prenom}</span>
+            <span class="question-email">${q.email}</span>
+            <span class="question-date">${q.date}</span>
+        </div>
+        <div class="question-actions">
+            <button class="btn-deplier" id="btn-${q.id}" onclick="deplierMessage(${q.id})">Lire ▾</button>
+            <button class="btn-valider" onclick="repondre(${q.id}, '${q.email}', '${q.prenom}', \`${messageSafe}\`)">✉ Répondre</button>
+            <button class="btn-supprimer" onclick="supprimerQuestion(${q.id})">Supprimer</button>
+        </div>
+    </div>
+    <div class="question-message" id="msg-${q.id}" style="display:none;">
+        ${messageSafe}
+    </div>
+`;
         liste.appendChild(div);
     });
 }
@@ -70,13 +69,9 @@ function deplierMessage(id) {
     const msg = document.getElementById(`msg-${id}`);
     const btn = document.getElementById(`btn-${id}`);
 
-    if (msg.style.display === 'none') {
-        msg.style.display = 'block';
-        btn.textContent = 'Fermer ▴';
-    } else {
-        msg.style.display = 'none';
-        btn.textContent = 'Lire ▾';
-    }
+    const ouvert = msg.style.display !== 'none';
+    msg.style.display = ouvert ? 'none' : 'block';
+    btn.textContent = ouvert ? 'Lire ▾' : 'Fermer ▴';
 }
 
 // ===================================
@@ -108,4 +103,3 @@ async function supprimerQuestion(id) {
 // ===================================
 
 chargerQuestions();
-</html>
