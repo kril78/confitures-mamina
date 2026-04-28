@@ -56,3 +56,36 @@ async add(table, data) {
     return text ? JSON.parse(text) : [];
 }
 }
+// ===================================
+// AUTHENTIFICATION
+// ===================================
+
+async function connecter(email, motDePasse) {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: {
+            'apikey': SUPABASE_KEY,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password: motDePasse })
+    });
+    return res.json();
+}
+
+async function verifierSession() {
+    const token = localStorage.getItem('sb_token');
+    if (!token) return false;
+
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return res.ok;
+}
+
+function deconnecter() {
+    localStorage.removeItem('sb_token');
+    window.location.href = 'index.html';
+}
