@@ -111,6 +111,8 @@ function afficherCalendrier() {
             if (dateActuelle >= debut && dateActuelle <= fin) {
                 div.classList.add('marche-periode');
                 div.title = m.nom;
+                div.style.cursor = 'pointer';
+                div.onclick = () => window.location.href = `fiche-marche.html?nom=${encodeURIComponent(m.nom)}`;
                 if (dateActuelle.getTime() === debut.getTime()) div.classList.add('marche-debut');
                 if (dateActuelle.getTime() === fin.getTime())   div.classList.add('marche-fin');
             }
@@ -163,6 +165,15 @@ function afficherListe() {
             </div>
         `;
     });
+}
+
+// ===================================
+// UTILITAIRES
+// ===================================
+
+function formaterDate(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 // ===================================
