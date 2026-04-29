@@ -881,3 +881,272 @@ footer p {
 .btn-deplier:hover {
     color: var(--couleur-dore-clair);
 }
+/* ===================================
+   RESPONSIVE MOBILE
+   =================================== */
+
+   @media (max-width: 768px) {
+
+    /* BASE */
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.4em;
+    }
+
+    /* NAVIGATION */
+    nav {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* SECTION IMAGE + TEXTE */
+    .section-image-texte {
+        flex-direction: column !important;
+        gap: 30px;
+    }
+
+    .section-image-texte img {
+        width: 100%;
+        height: 280px;
+    }
+
+    /* GRILLE CONFITURES */
+    .grille-confitures {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    /* RECHERCHE ET FILTRES */
+    .zone-filtres {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .filtre-bouton {
+        width: 100%;
+    }
+
+    .filtre-panneau {
+        width: 100%;
+    }
+
+    /* TABLEAU CONFITURES */
+    .tableau-confitures {
+        font-size: 0.85em;
+    }
+
+    .tableau-confitures th,
+    .tableau-confitures td {
+        padding: 10px 12px;
+    }
+
+    /* CARROUSEL TENDANCES */
+    .carte-tendance {
+        width: 160px;
+    }
+
+    .carte-tendance img {
+        height: 160px;
+    }
+
+    /* FOOTER */
+    footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 25px 20px;
+        gap: 15px;
+    }
+
+    footer p {
+        position: static;
+        transform: none;
+    }
+
+    .footer-coordonnees {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+}
+
+/* Téléphones petits */
+@media (max-width: 480px) {
+
+    h1 {
+        font-size: 1.6em;
+        letter-spacing: 1px;
+    }
+
+    main {
+        padding: 20px 10px;
+    }
+
+    .carte-confiture img {
+        height: 200px;
+    }
+
+    .contenu-carte h3 {
+        font-size: 1.2em;
+        font-size: 1.2em;
+    }
+
+    /* TABLEAU : masquer colonnes secondaires */
+    .tableau-confitures th:nth-child(3),
+    .tableau-confitures td:nth-child(3),
+    .tableau-confitures th:nth-child(4),
+    .tableau-confitures td:nth-child(4) {
+        display: none;
+    }
+}
+/* ===================================
+   RESPONSIVE - PAGE CONFITURES
+   =================================== */
+
+   @media (max-width: 768px) {
+
+    /* Filtres en colonne */
+    .barre-recherche-filtres {
+        padding: 0 10px;
+    }
+
+    .zone-filtres {
+        width: 100%;
+    }
+
+    .filtre-custom {
+        width: 100%;
+    }
+
+    .filtre-bouton {
+        width: 100%;
+    }
+
+    /* Carrousel tendances plus petit */
+    .carrousel-tendances {
+        gap: 15px;
+    }
+
+    .carte-tendance {
+        width: 140px;
+    }
+
+    .carte-tendance img {
+        height: 140px;
+    }
+
+    /* Tableau confitures : masquer colonne fruits sur mobile */
+    .tableau-confitures th:nth-child(3),
+    .tableau-confitures td:nth-child(3) {
+        display: none;
+    }
+}
+
+/* ===================================
+   RESPONSIVE - PAGE ACCUEIL
+   =================================== */
+
+@media (max-width: 768px) {
+
+    .section-image-texte {
+        flex-direction: column !important;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .section-image-texte img {
+        width: 100%;
+        max-width: 320px;
+        height: 250px;
+        margin: 0 auto;
+    }
+}
+
+/* ===================================
+   RESPONSIVE - PAGE MARCHÉS
+   =================================== */
+
+@media (max-width: 768px) {
+
+    /* Calendrier plus compact */
+    .calendrier {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .calendrier-grille {
+        font-size: 0.85em;
+    }
+
+    /* Bloc prochain marché */
+    #bloc-prochain {
+        font-size: 0.95em;
+    }
+
+    /* Liste des marchés */
+    #liste-marches {
+        font-size: 0.95em;
+    }
+}
+
+/* ===================================
+   RESPONSIVE - HEADER GÉNÉRAL
+   =================================== */
+
+@media (max-width: 768px) {
+
+    header {
+        padding: 20px 15px;
+    }
+
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    header p {
+        font-size: 1em;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    nav a {
+        font-size: 0.95em;
+    }
+}
+
+/* ===================================
+   RESPONSIVE - FOOTER
+   =================================== */
+
+@media (max-width: 768px) {
+
+    footer {
+        flex-direction: column;
+        text-align: center;
+        padding: 25px 15px;
+        gap: 15px;
+    }
+
+    footer p {
+        position: static;
+        transform: none;
+    }
+
+    .footer-coordonnees {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+}
