@@ -1150,3 +1150,71 @@ footer p {
         gap: 10px;
     }
 }
+/* ===================================
+   RESPONSIVE MOBILE - ADMIN
+   =================================== */
+
+@media (max-width: 768px) {
+
+    /* HEADER ADMIN */
+    .admin-header nav {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .admin-header nav a {
+        font-size: 0.9em;
+    }
+
+    /* BOUTON AJOUTER */
+    .btn-ajouter {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* TABLEAU : scroll horizontal */
+    .admin-main {
+        padding: 0 10px;
+    }
+
+    .tableau-admin {
+        font-size: 0.8em;
+    }
+
+    .tableau-admin th,
+    .tableau-admin td {
+        padding: 8px 10px;
+    }
+
+    /* ACTIONS en colonne */
+    .td-actions {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .btn-valider,
+    .btn-supprimer {
+        width: 100%;
+        text-align: center;
+        margin-right: 0;
+    }
+
+    /* QUESTIONS */
+    .question-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .question-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .question-meta {
+        gap: 8px;
+    }
+
+    .question-email {
+        display: none;
+    }
+}
