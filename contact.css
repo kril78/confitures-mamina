@@ -146,3 +146,39 @@
 .bloc-coordonnees {
     align-items: stretch;
 }
+/* ===================================
+   RESPONSIVE MOBILE - CONTACT
+   =================================== */
+
+@media (max-width: 768px) {
+
+    /* COORDONNÉES */
+    .ligne-coordonnees {
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .coord-item {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 15px 20px;
+        justify-content: flex-start;
+    }
+
+    .bloc-coordonnees {
+        width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    /* FORMULAIRE */
+    .formulaire-question {
+        padding: 0 10px;
+    }
+
+    .champ-groupe input,
+    .champ-groupe textarea {
+        font-size: 0.95em;
+    }
+}
