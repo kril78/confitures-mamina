@@ -90,3 +90,33 @@
 .btn-retour:hover {
     color: var(--couleur-dore);
 }
+/* ===================================
+   RESPONSIVE MOBILE - FICHE MARCHÉ
+   =================================== */
+
+@media (max-width: 768px) {
+
+    .fiche-marche-bloc {
+        flex-direction: column;
+        padding: 20px;
+        gap: 25px;
+    }
+
+    .fiche-marche-flyer {
+        width: 100%;
+        height: 250px;
+    }
+
+    .fiche-marche-infos h2 {
+        font-size: 1.5em;
+    }
+
+    .fiche-marche-details p {
+        font-size: 0.95em;
+    }
+
+    .btn-maps {
+        display: block;
+        text-align: center;
+    }
+}
