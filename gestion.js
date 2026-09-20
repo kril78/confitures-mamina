@@ -255,20 +255,56 @@ async function validerLigne(btn) {
     const textareas = tr.querySelectorAll('textarea');
     const selects = tr.querySelectorAll('select');
 
-    const nom = inputs[0].value || 'Sans nom';
-    const fruits = inputs[1].value || '';
+    const nom         = inputs[0].value || 'Sans nom';
+    const fruits      = inputs[1].value || '';
     const ingredients = inputs[2].value || '';
     const desc_courte = inputs[3].value || '';
     const desc_longue = textareas[0].value || '';
-    const type = selects[0].value;
-    const categories = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
-    const presence = selects[1].value;
+    const type        = selects[0].value;
+    const categories  = [...tr.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value).join(', ') || '—';
+    const presence    = selects[1].value;
 
     const inputImage = document.getElementById('input-image');
     let imageUrl = '';
     if (inputImage && inputImage.files[0]) {
         imageUrl = await uploadImage(inputImage.files[0]);
     }
+
+    const resultat = await db.add('confitures', {
+        nom,
+        fruits,
+        ingredients,
+        description_courte: desc_courte,
+        description_longue: desc_longue,
+        type,
+        categorie: categories,
+        presence,
+        image: imageUrl
+    });
+
+    // Si l'ajout a échoué, on s'arrête ici
+    if (!Array.isArray(resultat) || resultat.length === 0) {
+        alert("Erreur : la confiture n'a pas été enregistrée.");
+        return;
+    }
+
+    tr.dataset.id = resultat[0].id;   // l'id créé par la base
+    tr.dataset.rupture = 'false';     // une nouvelle confiture est en stock
+    tr.className = '';
+    tr.innerHTML = `
+        <td>${nom}</td>
+        <td>${type}</td>
+        <td>${fruits}</td>
+        <td>${categories}</td>
+        <td>${presence}</td>
+        <td>${ingredients}</td>
+        <td>${desc_courte ? desc_courte.substring(0, 50) + '...' : '—'}</td>
+        <td>${desc_longue ? desc_longue.substring(0, 50) + '...' : '—'}</td>
+        <td>${imageUrl ? `<img src="${imageUrl}" style="height:50px; border-radius:4px;">` : '—'}</td>
+        <td>${htmlBoutonStock(false)}</td>
+        <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
+    `;
+}
 
     const result = await db.add('confitures', {
         nom, fruits, ingredients,
