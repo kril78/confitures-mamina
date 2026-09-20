@@ -2,15 +2,14 @@
 // PROTECTION MOT DE PASSE
 // ===================================
 
-function verifierMdp() {
+async function verifierMdp() {
+    const email = document.getElementById('champ-email').value.trim();
     const mdp = document.getElementById('champ-mdp').value;
-    if (mdp === '1245') {
-        document.getElementById('ecran-mdp').style.display = 'none';
-    } else {
+
+    if (!email || !mdp) {
         document.getElementById('msg-erreur').style.display = 'block';
-        document.getElementById('champ-mdp').value = '';
+        return;
     }
-}   // ← à AJOUTER : c'est ici que la fonction se termine
 
     const resultat = await connecter(email, mdp);
 
