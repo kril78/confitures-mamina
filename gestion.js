@@ -70,7 +70,36 @@ function afficherLigne(c) {
     `;
     tbody.appendChild(tr);
 }
+// ===================================
+// GESTION DU STOCK (RUPTURE)
+// ===================================
 
+// Fabrique le bouton selon l'état (un seul endroit à modifier si tu changes le design)
+function htmlBoutonStock(rupture) {
+    return rupture
+        ? '<button class="btn-stock btn-stock-rupture" onclick="basculerStock(this)">❌ Rupture</button>'
+        : '<button class="btn-stock btn-stock-dispo" onclick="basculerStock(this)">✅ En stock</button>';
+}
+
+// Inverse l'état : en stock ↔ rupture
+async function basculerStock(btn) {
+    const tr = btn.closest('tr');
+    const id = tr.dataset.id;
+    const nouvelEtat = tr.dataset.rupture !== 'true';  // dataset stocke du texte : 'true' / 'false'
+
+    btn.disabled = true;  // évite les doubles clics pendant l'envoi
+    const resultat = await db.update('confitures', id, { rupture: nouvelEtat });
+
+    // Si Supabase n'a modifié aucune ligne, on prévient au lieu de faire semblant
+    if (!Array.isArray(resultat) || resultat.length === 0) {
+        alert("Erreur : la modification n'a pas été enregistrée.");
+        btn.disabled = false;
+        return;
+    }
+
+    tr.dataset.rupture = nouvelEtat;
+    btn.outerHTML = htmlBoutonStock(nouvelEtat);
+}
 // ===================================
 // AJOUT D'UNE CONFITURE
 // ===================================
