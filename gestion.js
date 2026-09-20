@@ -128,6 +128,13 @@ function ajouterLigne() {
             <button class="btn-valider" onclick="validerLigne(this)">✓ Valider</button>
             <button class="btn-supprimer" onclick="this.closest('tr').remove()">✕</button>
         </td>
+                <td>
+            <input type="file" id="input-image" accept="image/*" style="display:none;" onchange="previewImage(this)">
+            <button class="btn-valider" onclick="document.getElementById('input-image').click()">📷 Photo</button>
+            <div id="preview-image" style="margin-top:6px;"></div>
+        </td>
+        <td>—</td>   <!-- ← AJOUTER cette ligne -->
+        <td class="td-actions">
     `;
     tbody.appendChild(tr);
     tr.querySelector('input').focus();
