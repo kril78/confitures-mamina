@@ -54,6 +54,7 @@ function afficherLigne(c) {
     const tbody = document.getElementById('corps-admin');
     const tr = document.createElement('tr');
     tr.dataset.id = c.id;
+    tr.dataset.rupture = !!c.rupture;   // mémorise l'état "rupture" sur la ligne
     tr.innerHTML = `
         <td>${c.nom}</td>
         <td>${c.type || '—'}</td>
@@ -64,10 +65,8 @@ function afficherLigne(c) {
         <td>${c.description_courte ? c.description_courte.substring(0, 50) + '...' : '—'}</td>
         <td>${c.description_longue ? c.description_longue.substring(0, 50) + '...' : '—'}</td>
         <td>${c.image ? `<img src="${c.image}" style="height:50px; border-radius:4px;">` : '—'}</td>
-        <td class="td-actions">
-            <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
-            <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
-        </td>
+        <td>${htmlBoutonStock(!!c.rupture)}</td>
+        <td><button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button></td>
     `;
     tbody.appendChild(tr);
 }
