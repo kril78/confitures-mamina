@@ -10,7 +10,6 @@ function verifierMdp() {
         document.getElementById('msg-erreur').style.display = 'block';
         document.getElementById('champ-mdp').value = '';
     }
-}   // ← à AJOUTER : c'est ici que la fonction se termine
 
     const resultat = await connecter(email, mdp);
 
