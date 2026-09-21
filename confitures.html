@@ -145,46 +145,47 @@
         // RECHERCHE + FILTRES
         // ===================================
 
-        function filtrer() {
-            const recherche = document.getElementById('recherche').value.toLowerCase();
-            const cochees = [...document.querySelectorAll('.filtre-panneau input:checked')].map(cb => cb.value.toLowerCase());
+function filtrer() {
+    const recherche = document.getElementById('recherche').value.toLowerCase();
+    const cochees = [...document.querySelectorAll('.filtre-panneau input:checked')].map(cb => cb.value.toLowerCase());
 
-            const resultats = toutesLesConfitures.filter(c => {
-                const nom = (c.nom || '').toLowerCase();
-                const fruits = (c.fruits || '').toLowerCase();
-                const type = (c.type || '').toLowerCase();
-                const categorie = (c.categorie || '').toLowerCase();
-                const presence = (c.presence || '').toLowerCase();
-                const tout = `${type} ${categorie} ${presence}`;
+    const resultats = toutesLesConfitures.filter(c => {
+        const nom = (c.nom || '').toLowerCase();
+        const fruits = (c.fruits || '').toLowerCase();
+        const type = (c.type || '').toLowerCase();
+        const categorie = (c.categorie || '').toLowerCase();
+        const presence = (c.presence || '').toLowerCase();
+        const tout = `${type} ${categorie} ${presence}`;
 
-                const matchRecherche = recherche === '' || nom.includes(recherche) || fruits.includes(recherche);
+        const matchRecherche = recherche === '' || nom.includes(recherche) || fruits.includes(recherche);
+        const matchFiltre = cochees.length === 0 || cochees.every(f => tout.includes(f));
 
-                const matchFiltre = cochees.length === 0 || cochees.every(f => tout.includes(f));
+        return matchRecherche && matchFiltre;
+    });
 
-                return matchRecherche && matchFiltre;
-            });
-
-            afficherTableau(resultats);
-            afficherCarrousel(resultats);
+    afficherTableau(resultats);
+    afficherCarrousel(resultats);
+}
             function afficherCarrousel(confitures) {
-                const source = confitures;
-                const melange = [...source].sort(() => Math.random() - 0.5).slice(0, 6);
-                const carrousel = document.getElementById('carrousel-tendances');
-                carrousel.innerHTML = '';
-                melange.forEach(c => {
-                    const div = document.createElement('div');
-                    div.innerHTML = `
-    <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
-    <p>${c.nom} ${badgeStock(c)}</p>
-`;
-                    div.style.cursor = 'pointer';
-                    div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
-                    div.innerHTML = `
+    const melange = [...confitures].sort(() => Math.random() - 0.5).slice(0, 6);
+    const carrousel = document.getElementById('carrousel-tendances');
+    carrousel.innerHTML = '';
+
+    melange.forEach(c => {
+        const div = document.createElement('div');
+        div.className = `carte-tendance ${c.en_rupture ? 'carte-rupture' : ''}`;
+        div.style.cursor = 'pointer';
+        div.innerHTML = `
             <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
-            <p>${c.nom}</p>
+            <p>${c.nom} ${badgeStock(c)}</p>
         `;
-                    carrousel.appendChild(div);
-                });
+        div.onclick = () => {
+            tracker(`confiture:${c.nom}`);
+            window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
+        };
+        carrousel.appendChild(div);
+    });
+}
             }
         }
 
