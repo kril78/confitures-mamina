@@ -66,7 +66,6 @@ function afficherLigne(c) {
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
-            ${boutonRupture(c.en_rupture)}
         </td>
     `;
     tbody.appendChild(tr);
@@ -258,7 +257,6 @@ async function validerLigne(btn) {
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
-            ${boutonRupture(c.en_rupture)}
         </td>
     `;
 }
@@ -405,7 +403,6 @@ async function sauvegarderModification(btn, id) {
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
-            ${boutonRupture(c.en_rupture)}
         </td>
     `;
 }
@@ -433,7 +430,6 @@ async function annulerModification(btn, id) {
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
-            ${boutonRupture(c.en_rupture)}
         </td>
     `;
 }
@@ -468,29 +464,4 @@ async function confirmerSuppression(btn) {
         }
         tr.remove();
     }
-}
-// ===================================
-// RUPTURE DE STOCK
-// ===================================
-
-// Fabrique le bouton : vert "Rupture : Non" ou rouge "Rupture : Oui"
-function boutonRupture(enRupture) {
-    const classe = enRupture ? 'rupture-oui' : 'rupture-non';
-    const texte  = enRupture ? 'Rupture : Oui' : 'Rupture : Non';
-    return `<button class="btn-rupture ${classe}" onclick="basculerRupture(this, ${!!enRupture})">${texte}</button>`;
-}
-
-// Inverse l'état au clic
-async function basculerRupture(btn, enRupture) {
-    const id = btn.closest('tr').dataset.id;
-    btn.disabled = true;
-
-    const result = await db.update('confitures', id, { en_rupture: !enRupture });
-
-    if (!result || !result[0]) {
-        alert("Erreur : le stock n'a pas pu être modifié.");
-        btn.disabled = false;
-        return;
-    }
-    btn.outerHTML = boutonRupture(!enRupture);
 }
