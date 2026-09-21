@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nos Confitures - Les Confitures de Mamina</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="stock.css">
 </head>
 
 <body>
@@ -84,6 +85,7 @@
 
     <script src="supabase.js"></script>
     <script src="tracker.js"></script>
+    <script src="stock.js"></script>
     <script>
         let toutesLesConfitures = [];
 
@@ -103,7 +105,7 @@
             confitures.forEach(c => {
                 const tr = document.createElement('tr');
                 tr.style.cursor = 'pointer';
-                tr.innerHTML = `<td>${c.nom}</td><td>${c.type}</td><td>${c.fruits}</td>`;
+                tr.innerHTML = `<td>${c.nom} ${badgeStock(c)}</td><td>${c.type}</td><td>${c.fruits}</td>`;
                 tr.onclick = () => {
                     tracker(`confiture:${c.nom}`);
                     window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
@@ -122,7 +124,10 @@
             carrousel.innerHTML = '';
             melange.forEach(c => {
                 const div = document.createElement('div');
-                div.className = 'carte-tendance';
+                div.innerHTML = `
+    <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
+    <p>${c.nom} ${badgeStock(c)}</p>
+`;
                 div.style.cursor = 'pointer';
                 div.onclick = () => {
                     tracker(`confiture:${c.nom}`);
@@ -168,7 +173,10 @@
                 carrousel.innerHTML = '';
                 melange.forEach(c => {
                     const div = document.createElement('div');
-                    div.className = 'carte-tendance';
+                    div.innerHTML = `
+    <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
+    <p>${c.nom} ${badgeStock(c)}</p>
+`;
                     div.style.cursor = 'pointer';
                     div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
                     div.innerHTML = `
