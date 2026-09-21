@@ -66,6 +66,7 @@ function afficherLigne(c) {
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+            ${boutonRupture(c.en_rupture)}
         </td>
     `;
     tbody.appendChild(tr);
@@ -257,6 +258,7 @@ async function validerLigne(btn) {
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+            ${boutonRupture(c.en_rupture)}
         </td>
     `;
 }
@@ -403,6 +405,7 @@ async function sauvegarderModification(btn, id) {
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+            ${boutonRupture(c.en_rupture)}
         </td>
     `;
 }
@@ -430,6 +433,7 @@ async function annulerModification(btn, id) {
         <td class="td-actions">
             <button class="btn-valider" onclick="modifierLigne(this)">Modifier</button>
             <button class="btn-supprimer" onclick="confirmerSuppression(this)">Supprimer</button>
+            ${boutonRupture(c.en_rupture)}
         </td>
     `;
 }
