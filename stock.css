@@ -1,0 +1,61 @@
+/* ===================================
+   STOCK - Bouton admin
+   =================================== */
+
+.btn-rupture {
+    background: transparent;
+    border: 1px solid;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.btn-rupture:hover { opacity: 0.8; }
+.btn-rupture.rupture-non { color: #6fbf73; border-color: #6fbf73; }
+.btn-rupture.rupture-oui { color: #cc4444; border-color: #cc4444; background-color: rgba(204, 68, 68, 0.15); }
+
+@media (max-width: 768px) {
+    .btn-rupture { width: 100%; }
+}
+
+/* ===================================
+   STOCK - Affichage public
+   =================================== */
+
+.badge-rupture {
+    display: inline-block;
+    background-color: #8B2F2F;
+    color: white;
+    font-size: 0.7em;
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 8px;
+}
+
+.carte-tendance.carte-rupture img {
+    filter: grayscale(100%);
+    opacity: 0.6;
+}
+
+.carte-tendance .badge-rupture {
+    display: block;
+    width: fit-content;
+    margin: 6px auto 0 auto;
+}
+
+.fiche-badges .badge-rupture { margin-left: 0; }
+
+.fiche-rupture-msg {
+    color: #8B2F2F;
+    font-style: italic;
+    background-color: var(--couleur-fond-secondaire);
+    border-left: 3px solid #8B2F2F;
+    border-radius: 4px;
+    padding: 12px 18px;
+    margin: 0;
+}
