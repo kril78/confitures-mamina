@@ -32,9 +32,9 @@ function afficherFiche(c, toutes) {
 
 const suggestions = toutes.filter(x => x.nom !== c.nom && x.categorie === c.categorie);
 const carrousel = suggestions.slice(0, 6).map(x => `
-        <div class="carte-tendance ${x.en_rupture ? 'carte-rupture' : ''}" onclick="window.location.href='fiche.html?nom=${encodeURIComponent(x.nom)}'">
+        <div class="carte-tendance" onclick="window.location.href='fiche.html?nom=${encodeURIComponent(x.nom)}'">
             <img src="${x.image || ''}" alt="${x.nom}" onerror="this.style.display='none'">
-            <p>${x.nom} ${badgeStock(x)}</p>
+            <p>${x.nom}</p>
         </div>
     `).join('');
 
@@ -46,8 +46,6 @@ const carrousel = suggestions.slice(0, 6).map(x => `
             <div class="fiche-infos">
                 <h2>${c.nom}</h2>
                 <div class="fiche-badges">
-                <span class="badge badge-presence">${c.presence || 'Permanente'}</span>
-${badgeStock(c)}
                     <span class="badge">${c.type}</span>
                     <span class="badge badge-presence">${c.presence || 'Permanente'}</span>
                 </div>
@@ -62,9 +60,7 @@ ${badgeStock(c)}
                     <p><span class="label">📦 Catégorie :</span> ${c.categorie || '—'}</p>
                     <p><span class="label">⚗️ Composition :</span> ${c.ingredients || '60% fruits, 40% sucre'}</p>
                 </div>
-                ${c.en_rupture
-    ? '<p class="fiche-rupture-msg">Ce goût est momentanément indisponible. Revenez bientôt !</p>'
-    : '<a href="contact.html" class="btn-commander">Commander →</a>'}
+                <a href="contact.html" class="btn-commander">Commander →</a>
             </div>
         </div>
 
