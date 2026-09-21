@@ -89,6 +89,10 @@
     <script>
         let toutesLesConfitures = [];
 
+        // ===================================
+        // CHARGEMENT
+        // ===================================
+
         db.get('confitures').then(confitures => {
             toutesLesConfitures = confitures;
             afficherTableau(confitures);
@@ -122,21 +126,19 @@
             const melange = [...confitures].sort(() => Math.random() - 0.5).slice(0, 6);
             const carrousel = document.getElementById('carrousel-tendances');
             carrousel.innerHTML = '';
+
             melange.forEach(c => {
                 const div = document.createElement('div');
-                div.innerHTML = `
-    <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
-    <p>${c.nom} ${badgeStock(c)}</p>
-`;
+                div.className = `carte-tendance ${c.en_rupture ? 'carte-rupture' : ''}`;
                 div.style.cursor = 'pointer';
+                div.innerHTML = `
+                    <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
+                    <p>${c.nom} ${badgeStock(c)}</p>
+                `;
                 div.onclick = () => {
                     tracker(`confiture:${c.nom}`);
                     window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
                 };
-                div.innerHTML = `
-                <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
-                <p>${c.nom}</p>
-            `;
                 carrousel.appendChild(div);
             });
         }
@@ -158,7 +160,6 @@
                 const tout = `${type} ${categorie} ${presence}`;
 
                 const matchRecherche = recherche === '' || nom.includes(recherche) || fruits.includes(recherche);
-
                 const matchFiltre = cochees.length === 0 || cochees.every(f => tout.includes(f));
 
                 return matchRecherche && matchFiltre;
@@ -167,32 +168,11 @@
             afficherTableau(resultats);
             afficherCarrousel(resultats);
         }
-            function afficherCarrousel(confitures) {
-                const source = confitures;
-                const melange = [...source].sort(() => Math.random() - 0.5).slice(0, 6);
-                const carrousel = document.getElementById('carrousel-tendances');
-                carrousel.innerHTML = '';
-                melange.forEach(c => {
-                    const div = document.createElement('div');
-                    div.innerHTML = `
-    <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
-    <p>${c.nom} ${badgeStock(c)}</p>
-`;
-                    div.style.cursor = 'pointer';
-                    div.onclick = () => window.location.href = `fiche.html?nom=${encodeURIComponent(c.nom)}`;
-                    div.innerHTML = `
-            <img src="${c.image || ''}" alt="${c.nom}" onerror="this.style.display='none'">
-            <p>${c.nom}</p>
-        `;
-                    carrousel.appendChild(div);
-                });
-            }
-        }
 
         // Écoute la recherche en temps réel
         document.getElementById('recherche').addEventListener('input', filtrer);
 
-        // Écoute les checkboxes
+        // Écoute les cases à cocher des filtres
         document.querySelectorAll('.filtre-panneau input').forEach(cb => {
             cb.addEventListener('change', filtrer);
         });
