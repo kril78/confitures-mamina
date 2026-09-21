@@ -1,7 +1,3 @@
-// ===================================
-// PROTECTION MOT DE PASSE
-// ===================================
-
 async function verifierMdp() {
     const email = document.getElementById('champ-email').value.trim();
     const mdp = document.getElementById('champ-mdp').value;
